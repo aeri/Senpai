@@ -1,6 +1,5 @@
 
 
-[comment]: <> (![alt text](https://i.imgur.com/foxYHs9.png "senpai logo")
 <p align="center">
   <img  src="https://i.imgur.com/foxYHs9.png">
 </p>
