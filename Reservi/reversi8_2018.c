@@ -70,7 +70,7 @@ volatile char fila=0, columna=0, ready = 0;
 
 
 
-// extern int patron_volteo(char tablero[][8], int *longitud,char f, char c, char SF, char SC, char color);
+extern int patron_volteo(char tablero[][8], int *longitud,char f, char c, char SF, char SC, char color);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 0 indica CASILLA_VACIA, 1 indica FICHA_BLANCA y 2 indica FICHA_NEGRA
@@ -188,7 +188,7 @@ char ficha_valida(char tablero[][DIM], char f, char c, int *posicion_valida)
 // la función devuelve PATRON_ENCONTRADO (1) si encuentra patrón y NO_HAY_PATRON (0) en caso contrario
 // FA y CA son la fila y columna a analizar
 // longitud es un parámetro por referencia. Sirve para saber la longitud del patrón que se está analizando. Se usa para saber cuantas fichas habría que voltear
-int patron_volteo(char tablero[][DIM], int *longitud, char FA, char CA, char SF, char SC, char color)
+/*int patron_volteo(char tablero[][DIM], int *longitud, char FA, char CA, char SF, char SC, char color)
 {
     int posicion_valida; // indica si la posición es valida y contiene una ficha de algún jugador
     int patron; //indica si se ha encontrado un patrón o no
@@ -227,6 +227,7 @@ int patron_volteo(char tablero[][DIM], int *longitud, char FA, char CA, char SF,
         //printf("NO_HAY_PATRON \n");
     }
 }
+*/
 ////////////////////////////////////////////////////////////////////////////////
 // voltea n fichas en la dirección que toque
 // SF y SC son las cantidades a sumar para movernos en la dirección que toque
