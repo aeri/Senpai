@@ -1,7 +1,7 @@
-.global patron_volteo
+.global patron_volteo_arm_c
 .extern ficha_valida
 
-patron_volteo:
+patron_volteo_arm_c:
 	MOV IP,SP
 	STMDB SP!, {r4-r10,FP,IP,LR,PC}
 	SUB FP, IP, #4
@@ -9,8 +9,8 @@ patron_volteo:
 	mov r7, r1			@ r7 = *longitud
 	mov r8, r2			@ r8 = FA
 	mov r9, r3			@ r9 = CA
-	ldrb r4 , [FP, #4] @ r4 = SF
-	ldrb r5 , [FP, #8] @ r5 = SC
+	ldrsb r4 , [FP, #4] @ r4 = SF
+	ldrsb r5 , [FP, #8] @ r5 = SC
 	ldrb r6 , [FP, #12] @ r6 = color
 
 	add r8, r8, r4 @ FA = FA + SF
@@ -38,7 +38,7 @@ patron_volteo:
 	str r4, [SP]
 	str r5, [SP, #4]
 	str r6, [SP, #8]
-	bl patron_volteo
+	bl patron_volteo_arm_c
 	b epilogo
 igualcolor:
 @posicion_valida ==1 && casilla == color
