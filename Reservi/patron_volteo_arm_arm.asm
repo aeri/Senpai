@@ -26,17 +26,18 @@ patron_volteo_arm_arm:
 	bge else
 	cmp r3, #0
 	blt else
-	mov r8, #DIM
-	mul r8, r2, r8 @Buscamos la posición del tablero
+	mov r8, r2, LSL #3 @Calculamos la posición del tablero
 	add r8, r8, r3
-	ldr r8, [r8]
+	add r8, r0, r8
+	ldrb r8, [r8]
 	cmp r8, #CASILLA_VACIA
 	beq else
 	mov r9, #1 @posicion_valida=1
 	b fin
 
 else:
-	mov r9, #0
+	mov r9, #0 @posicion_valida=0
+	@mov r8, #CASILLA_VACIA
 
 fin:
 	cmp r9, #1 @ ¿posicion_valida==1?
@@ -50,11 +51,11 @@ fin:
 	str r4, [SP]
 	str r5, [SP, #4]
 	str r6, [SP, #8]
-	bl patron_volteo_arm_c
+	bl patron_volteo_arm_arm
 	b epilogo
 igualcolor:
 @posicion_valida ==1 && casilla == color
-	ldr r7, [r7] @ r7 = longitud
+	ldr r7, [r1] @ r7 = longitud
 	cmp r7, #0
 	ble nouno
 	mov r0, #PATRON_ENCONTRADO @ return 1
