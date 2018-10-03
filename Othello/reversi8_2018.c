@@ -1,3 +1,10 @@
+#include "8led.h"
+#include "button.h"
+#include "led.h"
+#include "timer.h"
+#include "44blib.h"
+#include "44b.h"
+
 // Tamaño del tablero
 enum { DIM=8 };
 
@@ -40,8 +47,8 @@ static const char __attribute__ ((aligned (8))) tabla_valor[DIM][DIM] =
 
 
 // Tabla de direcciones. Contiene los desplazamientos de las 8 direcciones posibles
-const char vSF[DIM] = {-1,-1, 0, 1, 1, 1, 0,-1};
-const char vSC[DIM] = { 0, 1, 1, 1, 0,-1,-1,-1};
+signed const char vSF[DIM] = {-1,-1, 0, 1, 1, 1, 0,-1};
+signed const char vSC[DIM] = { 0, 1, 1, 1, 0,-1,-1,-1};
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Variables globales que no deberían serlo
@@ -70,7 +77,8 @@ volatile char fila=0, columna=0, ready = 0;
 
 
 
-// extern int patron_volteo(char tablero[][8], int *longitud,char f, char c, char SF, char SC, char color);
+extern int patron_volteo_arm_c(char tablero[][8], int *longitud,char f, char c, char SF, char SC, char color);
+extern int patron_volteo_arm_arm(char tablero[][8], int *longitud,char f, char c, char SF, char SC, char color);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 0 indica CASILLA_VACIA, 1 indica FICHA_BLANCA y 2 indica FICHA_NEGRA
@@ -251,7 +259,7 @@ void voltear(char tablero[][DIM], char FA, char CA, char SF, char SC, int n, cha
 // char vSC[DIM] = { 0, 1, 1, 1, 0,-1,-1,-1};
 int actualizar_tablero(char tablero[][DIM], char f, char c, char color)
 {
-    char SF, SC; // cantidades a sumar para movernos en la dirección que toque
+	signed char SF, SC; // cantidades a sumar para movernos en la dirección que toque
     int i, flip, patron;
 
     for (i = 0; i < DIM; i++) // 0 es Norte, 1 NE, 2 E ...
@@ -260,7 +268,7 @@ int actualizar_tablero(char tablero[][DIM], char f, char c, char color)
         SC = vSC[i];
         // flip: numero de fichas a voltear
         flip = 0;
-        patron = patron_volteo(tablero, &flip, f, c, SF, SC, color);
+        patron = patron_volteo_arm_arm(tablero, &flip, f, c, SF, SC, color);
         //printf("Flip: %d \n", flip);
         if (patron == PATRON_ENCONTRADO )
         {
@@ -311,7 +319,7 @@ int elegir_mov(char candidatas[][DIM], char tablero[][DIM], char *f, char *c)
 
                         // nos dice qué hay que voltear en cada dirección
                         longitud = 0;
-                        patron = patron_volteo(tablero, &longitud, i, j, SF, SC, FICHA_BLANCA);
+                        patron = patron_volteo_arm_arm(tablero, &longitud, i, j, SF, SC, FICHA_BLANCA);
                         //  //printf("%d ", patron);
                         if (patron == PATRON_ENCONTRADO)
                         {
@@ -411,6 +419,17 @@ void actualizar_candidatas(char candidatas[][DIM], char f, char c)
 // Sólo que la máquina realice un movimiento correcto.
 void reversi8()
 {
+	sys_init();         // Inicializacion de la placa, interrupciones y puertos
+	timer2_inicializar();	    // Inicializacion del temporizador
+	Eint4567_init();	// inicializamos los pulsadores. Cada vez que se pulse se ver� reflejado en el 8led
+	D8Led_init();       // inicializamos el 8led
+
+	timer2_empezar();
+	Delay(30);
+	unsigned int tiempo = timer2_leer();
+
+	Delay(50);
+	unsigned int tiempo2 = timer2_leer();
 
 	 ////////////////////////////////////////////////////////////////////
 	 // Tablero candidatas: se usa para no explorar todas las posiciones del tablero
@@ -435,7 +454,7 @@ void reversi8()
     int fin = 0;  // fin vale 1 si el humano no ha podido mover
                   // (ha introducido un valor de movimiento con algún 8)
                   // y luego la máquina tampoco puede
-    char f, c;    // fila y columna elegidas por la máquina para su movimiento
+    unsigned char f, c;    // fila y columna elegidas por la máquina para su movimiento
 
     init_table(tablero, candidatas);
     while (fin == 0)
@@ -445,9 +464,11 @@ void reversi8()
         // si la fila o columna son 8 asumimos que el jugador no puede mover
         if (((fila) != DIM) && ((columna) != DIM))
         {
+
             tablero[fila][columna] = FICHA_NEGRA;
             actualizar_tablero(tablero, fila, columna, FICHA_NEGRA);
             actualizar_candidatas(candidatas, fila, columna);
+            unsigned int tiempo = timer2_parar();
             move = 1;
         }
 

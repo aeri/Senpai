@@ -65,7 +65,7 @@
     .extern       Image_ZI_Base     /* Base and limit of area */              
     .extern       Image_ZI_Limit    /* to zero initialise */       
 
-    .extern Main			/* The main entry of mon program */
+    .extern reversi8			/* The main entry of mon program */
     
     .text
 
@@ -298,8 +298,8 @@ F2:
 	MRS	r0, CPSR
 	BIC	r0, r0, #NOINT /* enable interrupt */
 	MSR	CPSR_cxsf, r0
-	/* jump to main() */
-   	BL	Main
+	/* jump to reversi8() */
+   	BL	reversi8
    	B   .	    
 
 #;****************************************************
