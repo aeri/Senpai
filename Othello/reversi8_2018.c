@@ -21,6 +21,12 @@ FICHA_BLANCA = 1,
 FICHA_NEGRA = 2
 };
 
+//Selector de modo de prueba a modo de juego
+const int PRUEBA = 0;
+//Número de pruebas a realizar en el test
+enum { NP = 5 };
+
+
 // candidatas: indica las posiciones a explorar
 // Se usa para no explorar todo el tablero innecesariamente
 // Sus posibles valores son NO, SI, CASILLA_OCUPADA
@@ -50,6 +56,115 @@ static const char __attribute__ ((aligned (8))) tabla_valor[DIM][DIM] =
 signed const char vSF[DIM] = {-1,-1, 0, 1, 1, 1, 0,-1};
 signed const char vSC[DIM] = { 0, 1, 1, 1, 0,-1,-1,-1};
 
+
+
+
+
+char __attribute__ ((aligned (8))) tableros[NP][DIM][DIM] = {
+	        {{CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,FICHA_NEGRA,FICHA_BLANCA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,FICHA_NEGRA,FICHA_BLANCA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA},
+	        {FICHA_BLANCA,FICHA_BLANCA,FICHA_BLANCA,FICHA_BLANCA,FICHA_BLANCA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA}},
+
+	        {{CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	    	{CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,FICHA_NEGRA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,CASILLA_VACIA,FICHA_BLANCA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA}},
+
+	        {{CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA}},
+
+	        {{CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,FICHA_BLANCA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {FICHA_BLANCA,CASILLA_VACIA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,FICHA_BLANCA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,CASILLA_VACIA}},
+
+	        {{FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA},
+	        {CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,CASILLA_VACIA,FICHA_BLANCA,CASILLA_VACIA,FICHA_BLANCA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,FICHA_BLANCA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA},
+	        {FICHA_NEGRA,FICHA_BLANCA,FICHA_BLANCA,FICHA_BLANCA,CASILLA_VACIA,FICHA_BLANCA,FICHA_BLANCA,FICHA_NEGRA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,FICHA_BLANCA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,CASILLA_VACIA,FICHA_BLANCA,CASILLA_VACIA,FICHA_BLANCA,CASILLA_VACIA},
+	        {CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA}}
+
+	    };
+
+char __attribute__ ((aligned (8))) resultados[NP][DIM][DIM] = {
+	        {{CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA},
+	        {FICHA_BLANCA,FICHA_BLANCA,FICHA_BLANCA,FICHA_BLANCA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA}},
+
+	        {{CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+			{CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+			{CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+			{CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,FICHA_NEGRA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+			{CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+			{CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+			{CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+			{CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA}},
+
+	        {{FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA}},
+
+	        {{CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,FICHA_BLANCA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {FICHA_BLANCA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,FICHA_BLANCA,FICHA_BLANCA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_BLANCA,CASILLA_VACIA}},
+
+	        {{FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA},
+	        {CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+	        {FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA},
+	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,FICHA_NEGRA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA},
+	        {CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA},
+	        {CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA,CASILLA_VACIA,CASILLA_VACIA,FICHA_NEGRA}}
+	    };
+
+char movimientos[NP][2] = {
+	{1,4}, {5,3}, {0,0}, {2,1}, {4,4}
+};
+
+
+
+
+
+
+
 //////////////////////////////////////////////////////////////////////////////////////
 // Variables globales que no deberían serlo
 // tablero, fila, columna y ready son varibles que se deberían definir como locales dentro de reversi8.
@@ -76,9 +191,33 @@ char __attribute__ ((aligned (8))) tablero[DIM][DIM] = {
 volatile char fila=0, columna=0, ready = 0;
 
 
+int patron_volteo(char tablero[][DIM], int *longitud, char FA, char CA, signed char SF, signed char SC, char color);
+extern int patron_volteo_arm_c(char tablero[][8], int *longitud,char f, char c, signed char SF, signed char SC, char color);
+extern int patron_volteo_arm_arm(char tablero[][8], int *longitud,char f, char c, signed char SF, signed char SC, char color);
 
-extern int patron_volteo_arm_c(char tablero[][8], int *longitud,char f, char c, char SF, char SC, char color);
-extern int patron_volteo_arm_arm(char tablero[][8], int *longitud,char f, char c, char SF, char SC, char color);
+
+int patron_volteo_test(char tablero[][DIM], int *longitud, char FA, char CA, signed char SF, signed char SC, char color){
+	int longc = *longitud;
+	int longarmc = *longitud;
+	int longarmarm = *longitud;
+	timer2_inicializar();	    // Inicializacion del temporizador
+	timer2_empezar();
+
+	int respuestac = patron_volteo(tablero, &longc, FA, CA, SF, SC, color);
+	volatile unsigned int tiempoc = timer2_leer();
+
+	int respuestarmc = patron_volteo_arm_c(tablero, &longarmc, FA, CA, SF, SC, color);
+	volatile unsigned int tiempoarmc = timer2_leer() - tiempoc;
+
+	int respuestarmarm = patron_volteo_arm_arm(tablero, &longarmarm, FA, CA, SF, SC, color);
+	volatile unsigned int tiempoarmarm = timer2_leer() - tiempoarmc - tiempoc;
+
+	timer2_parar();
+	while (respuestac!=respuestarmc || respuestarmc!=respuestarmarm || longc!=longarmc || longarmc!=longarmarm){/*La respuesta no es correcta*/}
+	*longitud=longc;
+	return respuestac;
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 0 indica CASILLA_VACIA, 1 indica FICHA_BLANCA y 2 indica FICHA_NEGRA
@@ -196,7 +335,7 @@ char ficha_valida(char tablero[][DIM], char f, char c, int *posicion_valida)
 // la función devuelve PATRON_ENCONTRADO (1) si encuentra patrón y NO_HAY_PATRON (0) en caso contrario
 // FA y CA son la fila y columna a analizar
 // longitud es un parámetro por referencia. Sirve para saber la longitud del patrón que se está analizando. Se usa para saber cuantas fichas habría que voltear
-int patron_volteo(char tablero[][DIM], int *longitud, char FA, char CA, char SF, char SC, char color)
+int patron_volteo(char tablero[][DIM], int *longitud, char FA, char CA, signed char SF, signed char SC, char color)
 {
     int posicion_valida; // indica si la posición es valida y contiene una ficha de algún jugador
     int patron; //indica si se ha encontrado un patrón o no
@@ -240,7 +379,7 @@ int patron_volteo(char tablero[][DIM], int *longitud, char FA, char CA, char SF,
 // SF y SC son las cantidades a sumar para movernos en la dirección que toque
 // color indica el color de la pieza que se acaba de colocar
 // FA y CA son la fila y columna a analizar
-void voltear(char tablero[][DIM], char FA, char CA, char SF, char SC, int n, char color)
+void voltear(char tablero[][DIM], char FA, char CA, signed char SF, signed char SC, int n, char color)
 {
     int i;
 
@@ -268,7 +407,7 @@ int actualizar_tablero(char tablero[][DIM], char f, char c, char color)
         SC = vSC[i];
         // flip: numero de fichas a voltear
         flip = 0;
-        patron = patron_volteo_arm_arm(tablero, &flip, f, c, SF, SC, color);
+        patron = patron_volteo_test(tablero, &flip, f, c, SF, SC, color);
         //printf("Flip: %d \n", flip);
         if (patron == PATRON_ENCONTRADO )
         {
@@ -295,7 +434,7 @@ int elegir_mov(char candidatas[][DIM], char tablero[][DIM], char *f, char *c)
     int mc;      // almacena la columna del mejor movimiento encontrado
     char mejor = 0; // almacena el mejor valor encontrado
     int patron, longitud;
-    char SF, SC; // cantidades a sumar para movernos en la dirección que toque
+    signed char SF, SC; // cantidades a sumar para movernos en la dirección que toque
 
     // Recorremos todo el tablero comprobando dónde podemos mover
     // Comparamos la puntuación de los movimientos encontrados y nos quedamos con el mejor
@@ -319,7 +458,7 @@ int elegir_mov(char candidatas[][DIM], char tablero[][DIM], char *f, char *c)
 
                         // nos dice qué hay que voltear en cada dirección
                         longitud = 0;
-                        patron = patron_volteo_arm_arm(tablero, &longitud, i, j, SF, SC, FICHA_BLANCA);
+                        patron = patron_volteo_test(tablero, &longitud, i, j, SF, SC, FICHA_BLANCA);
                         //  //printf("%d ", patron);
                         if (patron == PATRON_ENCONTRADO)
                         {
@@ -420,17 +559,12 @@ void actualizar_candidatas(char candidatas[][DIM], char f, char c)
 void reversi8()
 {
 	sys_init();         // Inicializacion de la placa, interrupciones y puertos
-	timer2_inicializar();	    // Inicializacion del temporizador
+
 	Eint4567_init();	// inicializamos los pulsadores. Cada vez que se pulse se ver� reflejado en el 8led
 	D8Led_init();       // inicializamos el 8led
 
-	timer2_empezar();
-	Delay(30);
-	unsigned int tiempo = timer2_leer();
-
-	Delay(50);
-	unsigned int tiempo2 = timer2_leer();
-
+	//Iterador para cargar y comprobar tableros de forma sucesiva
+	int i = 0;
 	 ////////////////////////////////////////////////////////////////////
 	 // Tablero candidatas: se usa para no explorar todas las posiciones del tablero
 	// sólo se exploran las que están alrededor de las fichas colocadas
@@ -457,9 +591,25 @@ void reversi8()
     unsigned char f, c;    // fila y columna elegidas por la máquina para su movimiento
 
     init_table(tablero, candidatas);
+    int a, b, j, k;
     while (fin == 0)
     {
         move = 0;
+        if (PRUEBA == 1){
+        	a = 0;
+        	b = 0;
+			while (a < DIM){
+				while (b < DIM){
+					tablero[a][b] = tableros [i][a][b];
+					b++;
+				}
+				b = 0;
+				a++;
+			}
+        	fila=movimientos[i][0];
+        	columna=movimientos[i][1];
+        	ready = 1;
+        }
         esperar_mov(&ready);
         // si la fila o columna son 8 asumimos que el jugador no puede mover
         if (((fila) != DIM) && ((columna) != DIM))
@@ -468,23 +618,43 @@ void reversi8()
             tablero[fila][columna] = FICHA_NEGRA;
             actualizar_tablero(tablero, fila, columna, FICHA_NEGRA);
             actualizar_candidatas(candidatas, fila, columna);
-            unsigned int tiempo = timer2_parar();
             move = 1;
         }
-
-        // escribe el movimiento en las variables globales fila columna
-        done = elegir_mov(candidatas, tablero, &f, &c);
-        if (done == -1)
-        {
-            if (move == 0)
-                fin = 1;
+        if (PRUEBA == 1){
+        	j = 0;
+        	k = 0;
+        	while (j < DIM){
+        		while (k < DIM){
+        			if (tablero[j][k] != resultados [i][j][k]){
+        				//El resultado no coincide, bucle para depurar fallos
+        				while (1);
+        			}
+        			k++;
+        		}
+        		k = 0;
+        		j++;
+        	}
+        	i++;
+        	if (i == NP){
+        		fin = 1;
+        	}
         }
-        else
-        {
-            tablero[f][c] = FICHA_BLANCA;
-            actualizar_tablero(tablero, f, c, FICHA_BLANCA);
-            actualizar_candidatas(candidatas, f, c);
-        }
+        if (PRUEBA == 0){
+        		// escribe el movimiento en las variables globales fila columna
+				done = elegir_mov(candidatas, tablero, &f, &c);
+				if (done == -1)
+				{
+					if (move == 0)
+						fin = 1;
+				}
+				else
+				{
+					tablero[f][c] = FICHA_BLANCA;
+					actualizar_tablero(tablero, f, c, FICHA_BLANCA);
+					actualizar_candidatas(candidatas, f, c);
+				}
+		}
+		contar(tablero, &blancas, &negras);
     }
-    contar(tablero, &blancas, &negras);
 }
+

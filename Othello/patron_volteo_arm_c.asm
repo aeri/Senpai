@@ -33,12 +33,14 @@ patron_volteo_arm_c:
 	mov r1, r7 @ r1 = *longitud
 	ldr r7, [r1] @ r7 = longitud
 	add r7, r7, #1
+	sub SP,SP,#12
 	str r7, [r1]
 	mov r0, r10 @ re:zero = tablero
 	str r4, [SP]
 	str r5, [SP, #4]
 	str r6, [SP, #8]
 	bl patron_volteo_arm_c
+	add SP, SP, #12
 	b epilogo
 igualcolor:
 @posicion_valida ==1 && casilla == color

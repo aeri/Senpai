@@ -45,6 +45,7 @@ fin:
 	cmp r8, r6 @ ¿ficha==color?
 	beq igualcolor
 @posicion_valida == 1 && casilla!=color
+	sub SP,SP,#12
 	ldr r7, [r1] @ r7 = longitud
 	add r7, r7, #1
 	str r7, [r1]
@@ -52,6 +53,7 @@ fin:
 	str r5, [SP, #4]
 	str r6, [SP, #8]
 	bl patron_volteo_arm_arm
+	add SP,SP,#12
 	b epilogo
 igualcolor:
 @posicion_valida ==1 && casilla == color

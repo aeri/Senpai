@@ -15,7 +15,7 @@ FICHA_NEGRA = 2
 };
 
 //Selector de modo de prueba a modo de juego
-const int PRUEBA = 1;
+const int PRUEBA = 0;
 //Número de pruebas a realizar en el test
 enum { NP = 5 };
 
@@ -193,13 +193,13 @@ int patron_volteo_test(char tablero[][DIM], int *longitud, char FA, char CA, cha
 	int longc = *longitud;
 	int longarmc = *longitud;
 	int longarmarm = *longitud;
-	int respuestac = patron_volteo(tablero, &longc, FA, CA, SF, SC, color);
-	int respuestarmc = patron_volteo_arm_c(tablero, &longarmc, FA, CA, SF, SC, color);
+	//int respuestac = patron_volteo(tablero, &longc, FA, CA, SF, SC, color);
+	//int respuestarmc = patron_volteo_arm_c(tablero, &longarmc, FA, CA, SF, SC, color);
 	int respuestarmarm = patron_volteo_arm_arm(tablero, &longarmarm, FA, CA, SF, SC, color);
 
-	while (respuestac!=respuestarmc || respuestarmc!=respuestarmarm || longc!=longarmc || longarmc!=longarmarm){/*La respuesta no es correcta*/}
-	*longitud=longc;
-	return respuestac;
+	//while (respuestac!=respuestarmc || respuestarmc!=respuestarmarm || longc!=longarmc || longarmc!=longarmarm){/*La respuesta no es correcta*/}
+	*longitud=longarmarm;
+	return respuestarmarm;
 }
 
 

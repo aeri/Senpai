@@ -58,12 +58,14 @@ void timer2_empezar(void){
 unsigned int timer2_leer(){
 	bool correcto=false;
 	int toma1,toma2,tics;
-	while (!correcto){
 		toma1=inter2;
 		tics=rTCNTO2;
 		toma2=inter2;
 		correcto=(toma1==toma2);
-	}
+		if(!correcto){
+			toma1=inter2;
+			tics=rTCNTO2;
+		}
 	return (toma1*rTCNTB2+(rTCNTB2-tics))/32;
 }
 
