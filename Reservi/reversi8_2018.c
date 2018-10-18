@@ -184,22 +184,25 @@ char __attribute__ ((aligned (8))) tablero[DIM][DIM] = {
 volatile char fila=0, columna=0, ready = 0;
 
 
-int patron_volteo(char tablero[][DIM], int *longitud, char FA, char CA, char SF, char SC, char color);
-extern int patron_volteo_arm_c(char tablero[][8], int *longitud,char f, char c, char SF, char SC, char color);
-extern int patron_volteo_arm_arm(char tablero[][8], int *longitud,char f, char c, char SF, char SC, char color);
+int patron_volteo(char tablero[][DIM], int *longitud, char FA, char CA, signed char SF, signed char SC, char color);
+extern int patron_volteo_arm_c(char tablero[][8], int *longitud,char f, char c, signed char SF, signed char SC, char color);
+extern int patron_volteo_arm_arm(char tablero[][8], int *longitud,char f, char c, signed char SF, signed char SC, char color);
 
 
-int patron_volteo_test(char tablero[][DIM], int *longitud, char FA, char CA, char SF, char SC, char color){
+int patron_volteo_test(char tablero[][DIM], int *longitud, char FA, char CA, signed char SF, signed char SC, char color){
 	int longc = *longitud;
 	int longarmc = *longitud;
 	int longarmarm = *longitud;
-	//int respuestac = patron_volteo(tablero, &longc, FA, CA, SF, SC, color);
-	//int respuestarmc = patron_volteo_arm_c(tablero, &longarmc, FA, CA, SF, SC, color);
+	int respuestac = patron_volteo(tablero, &longc, FA, CA, SF, SC, color);
+	int respuestarmc = patron_volteo_arm_c(tablero, &longarmc, FA, CA, SF, SC, color);
 	int respuestarmarm = patron_volteo_arm_arm(tablero, &longarmarm, FA, CA, SF, SC, color);
 
-	//while (respuestac!=respuestarmc || respuestarmc!=respuestarmarm || longc!=longarmc || longarmc!=longarmarm){/*La respuesta no es correcta*/}
-	*longitud=longarmarm;
-	return respuestarmarm;
+	if (respuestac!=respuestarmc || respuestarmc!=respuestarmarm || longc!=longarmc || longarmc!=longarmarm){
+		while (1);/*La respuesta no es correcta*/
+	}
+
+	*longitud=longarmc;
+	return respuestarmc;
 }
 
 
@@ -263,7 +266,7 @@ void init_table(char tablero[][DIM], char candidatas[][DIM])
 // CUIDADO: si el compilador coloca esta variable en un registro, no funcionará.
 // Hay que definirla como "volatile" para forzar a que antes de cada uso la cargue de memoria
 
-void esperar_mov(char *ready)
+void esperar_mov(volatile unsigned char *ready)
 {
     while (*ready == 0) {};  // bucle de espera de respuestas hasta que el se modifique el valor de ready (hay que hacerlo manualmente)
 
@@ -319,7 +322,7 @@ char ficha_valida(char tablero[][DIM], char f, char c, int *posicion_valida)
 // la función devuelve PATRON_ENCONTRADO (1) si encuentra patrón y NO_HAY_PATRON (0) en caso contrario
 // FA y CA son la fila y columna a analizar
 // longitud es un parámetro por referencia. Sirve para saber la longitud del patrón que se está analizando. Se usa para saber cuantas fichas habría que voltear
-int patron_volteo(char tablero[][DIM], int *longitud, char FA, char CA, char SF, char SC, char color)
+int patron_volteo(char tablero[][DIM], int *longitud, char FA, char CA, signed char SF, signed char SC, char color)
 {
     int posicion_valida; // indica si la posición es valida y contiene una ficha de algún jugador
     int patron; //indica si se ha encontrado un patrón o no

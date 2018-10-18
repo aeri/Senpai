@@ -188,7 +188,7 @@ char __attribute__ ((aligned (8))) tablero[DIM][DIM] = {
      // VARIABLES PARA INTERACCIONAR CON LA ENTRADA SALIDA
      // Pregunta: ¿hay que hacer algo con ellas para que esto funcione bien?
      // (por ejemplo añadir alguna palabra clave para garantizar que la sincronización a través de esa variable funcione)
-volatile char fila=0, columna=0, ready = 0;
+volatile unsigned char fila=0, columna=0, ready = 0;
 
 
 int patron_volteo(char tablero[][DIM], int *longitud, char FA, char CA, signed char SF, signed char SC, char color);
@@ -279,7 +279,7 @@ void init_table(char tablero[][DIM], char candidatas[][DIM])
 // CUIDADO: si el compilador coloca esta variable en un registro, no funcionará.
 // Hay que definirla como "volatile" para forzar a que antes de cada uso la cargue de memoria
 
-void esperar_mov(char *ready)
+void esperar_mov(volatile unsigned char *ready)
 {
     while (*ready == 0) {};  // bucle de espera de respuestas hasta que el se modifique el valor de ready (hay que hacerlo manualmente)
 
@@ -427,7 +427,7 @@ int actualizar_tablero(char tablero[][DIM], char f, char c, char color)
 // NO    0
 // SI    1
 // CASILLA_OCUPADA 2
-int elegir_mov(char candidatas[][DIM], char tablero[][DIM], char *f, char *c)
+int elegir_mov(char candidatas[][DIM], char tablero[][DIM], unsigned char *f, unsigned char *c)
 {
     int i, j, k, found;
     int mf = -1; // almacena la fila del mejor movimiento encontrado

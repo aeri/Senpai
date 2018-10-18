@@ -11,9 +11,10 @@ patron_volteo_arm_arm:
 	@ r1 = *longitud
 	@ r2 = FA
 	@ r3 = CA
-	ldrsb r4 , [FP, #4] @ r4 = SF
-	ldrsb r5 , [FP, #8] @ r5 = SC
-	ldrb r6 , [FP, #12] @ r6 = color
+	LDMIB FP, {r4,r5,r6}
+	@ r4 = SF
+	@ r5 = SC
+	@ r6 = color
 
 	add r2, r2, r4 @ FA = FA + SF
 	add r3, r3, r5 @ CA = CA + SC
@@ -26,9 +27,9 @@ patron_volteo_arm_arm:
 	bge else
 	cmp r3, #0
 	blt else
-	mov r8, r2, LSL #3 @Calculamos la posición del tablero
-	add r8, r8, r3
-	add r8, r0, r8
+	@mov r8, r2, LSL #3
+	add r8, r3, r2, LSL #3 @Calculamos la posición del tablero
+	add r8, r0, r8 @Sumamos la posición inicial del tablero
 	ldrb r8, [r8]
 	cmp r8, #CASILLA_VACIA
 	beq else
@@ -45,15 +46,13 @@ fin:
 	cmp r8, r6 @ ¿ficha==color?
 	beq igualcolor
 @posicion_valida == 1 && casilla!=color
-	sub SP,SP,#12
 	ldr r7, [r1] @ r7 = longitud
 	add r7, r7, #1
 	str r7, [r1]
-	str r4, [SP]
-	str r5, [SP, #4]
-	str r6, [SP, #8]
+	sub sp,sp,#12 @ Reserva espacio en la pila para cargar los resultados
+	STMIA SP, {r4,r5,r6}
 	bl patron_volteo_arm_arm
-	add SP,SP,#12
+	add sp,sp,#12  @ Se devuelve la cima de la pila a su estado original
 	b epilogo
 igualcolor:
 @posicion_valida ==1 && casilla == color

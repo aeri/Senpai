@@ -9,9 +9,10 @@ patron_volteo_arm_c:
 	mov r7, r1			@ r7 = *longitud
 	mov r8, r2			@ r8 = FA
 	mov r9, r3			@ r9 = CA
-	ldrsb r4 , [FP, #4] @ r4 = SF
-	ldrsb r5 , [FP, #8] @ r5 = SC
-	ldrb r6 , [FP, #12] @ r6 = color
+	LDMIB FP, {r4,r5,r6}
+	@ r4 = SF
+	@ r5 = SC
+	@ r6 = color
 
 	add r8, r8, r4 @ FA = FA + SF
 	add r9, r9, r5 @ CA = CA + SC
@@ -33,14 +34,12 @@ patron_volteo_arm_c:
 	mov r1, r7 @ r1 = *longitud
 	ldr r7, [r1] @ r7 = longitud
 	add r7, r7, #1
-	sub SP,SP,#12
+	sub SP,SP,#12 @ Reserva espacio en la pila para cargar los resultados
 	str r7, [r1]
 	mov r0, r10 @ re:zero = tablero
-	str r4, [SP]
-	str r5, [SP, #4]
-	str r6, [SP, #8]
+	STMIA SP, {r4,r5,r6}
 	bl patron_volteo_arm_c
-	add SP, SP, #12
+	add SP, SP, #12 @ Se devuelve la cima de la pila a su estado original
 	b epilogo
 igualcolor:
 @posicion_valida ==1 && casilla == color
