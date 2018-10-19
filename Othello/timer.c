@@ -9,7 +9,7 @@
 #include "timer.h"
 #include "44b.h"
 #include "44blib.h"
-#include "stdbool.h"
+#include "stdlib.h"
 
 /*--- variables globales ---*/
 static volatile int inter2 = 0;
@@ -41,7 +41,7 @@ void timer2_inicializar(void)
 	rTCFG0 &= 0xffff00ff; // ajusta el preescalado
 	rTCFG1 &= 0xfffff0ff; // selecciona la entrada del mux que proporciona el reloj. La 00 corresponde a un divisor de 1/2.
 	rTCNTB2 = 65535;// valor inicial de cuenta (la cuenta es descendente)
-	rTCMPB2 = 12800;// valor de comparación
+	rTCMPB2 = 0;// valor de comparación
 	/* establecer update=manual (bit 1) + inverter=on (¿? será inverter off un cero en el bit 2 pone el inverter en off)*/
 	/* iniciar timer (bit 0) con auto-reload (bit 3)*/
 	rTCON |= 0xc000;
@@ -55,26 +55,37 @@ void timer2_empezar(void){
 	rTCON ^= 0x0003000;
 }
 
+inline static unsigned int ticks_to_ms(unsigned int ticks)
+{
+	return ticks >> 5; /* dividir por 32 */
+}
+
 unsigned int timer2_leer(){
-	bool correcto=false;
-	int toma1,toma2,tics;
-		toma1=inter2;
-		tics=rTCNTO2;
-		toma2=inter2;
-		correcto=(toma1==toma2);
-		if(!correcto){
-			toma1=inter2;
-			tics=rTCNTO2;
-		}
-	return (toma1*rTCNTB2+(rTCNTB2-tics))/32;
+
+	unsigned int ints_antes, ints_despues;
+	size_t i = 0;
+
+	ints_antes = inter2;
+	unsigned int ticks=rTCNTO2;
+	ints_despues = inter2;
+
+	for(i=0; (i< 10) && (ints_antes != ints_despues); ++i ){
+		ints_antes = inter2;
+		ticks=rTCNTO2;
+		ints_despues = inter2;
+	}
+
+	unsigned int ticks_totales = ints_antes * rTCNTB2 + (rTCNTB2-ticks);
+
+	return ticks_to_ms(ticks_totales);
 }
 
 unsigned int timer2_parar(){
 	// Parar el timer y bajar auto-reload
 	rTCON &= 0xFFF6FFF;
 
-	int toma,tics;
+	unsigned int toma,tics;
 	toma=inter2;
 	tics=rTCNTO2;
-	return (toma*rTCNTB2+(rTCNTB2-tics))/32;
+	return ticks_to_ms(toma*rTCNTB2+(rTCNTB2-tics));
 }

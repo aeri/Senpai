@@ -1,0 +1,34 @@
+-O0
+tiempoc	39	
+tiempoarmc	35	
+tiempoarmarm	26	
+
+
+-O1
+tiempoc	18	
+tiempoarmc	16	
+tiempoarmarm	14	
+
+
+-O2
+
+tiempoc	12	
+tiempoarmc	16	
+tiempoarmarm	14	
+
+
+
+-O3
+
+tiempoc	8	
+tiempoarmc	17	
+tiempoarmarm	14	
+
+
+-OS
+
+tiempoc	18	
+tiempoarmc	17	
+tiempoarmarm	14	
+
+

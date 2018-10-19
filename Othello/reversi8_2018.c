@@ -203,16 +203,17 @@ int patron_volteo_test(char tablero[][DIM], int *longitud, char FA, char CA, sig
 	timer2_inicializar();	    // Inicializacion del temporizador
 	timer2_empezar();
 
+	volatile unsigned int tiempo_comienzo1 = timer2_leer();
 	int respuestac = patron_volteo(tablero, &longc, FA, CA, SF, SC, color);
-	volatile unsigned int tiempoc = timer2_leer();
+	volatile unsigned int tiempoc = timer2_leer() - tiempo_comienzo1;
 
+	volatile unsigned int tiempo_comienzo2 = timer2_leer();
 	int respuestarmc = patron_volteo_arm_c(tablero, &longarmc, FA, CA, SF, SC, color);
-	volatile unsigned int tiempoarmc = timer2_leer() - tiempoc;
+	volatile unsigned int tiempoarmc = timer2_leer() - tiempo_comienzo2;
 
+	volatile unsigned int tiempo_comienzo3 = timer2_leer();
 	int respuestarmarm = patron_volteo_arm_arm(tablero, &longarmarm, FA, CA, SF, SC, color);
-	volatile unsigned int tiempoarmarm = timer2_leer() - tiempoarmc - tiempoc;
-
-	timer2_parar();
+	volatile unsigned int tiempoarmarm = timer2_parar() - tiempo_comienzo3;
 	while (respuestac!=respuestarmc || respuestarmc!=respuestarmarm || longc!=longarmc || longarmc!=longarmarm){/*La respuesta no es correcta*/}
 	*longitud=longc;
 	return respuestac;
