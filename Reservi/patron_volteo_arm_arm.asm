@@ -5,7 +5,7 @@
 .equ	NO_HAY_PATRON, 0
 patron_volteo_arm_arm:
 	MOV IP,SP
-	STMDB SP!, {r4-r10,FP,IP,LR,PC}
+	STMDB SP!, {r4-r9,FP,IP,LR,PC}
 	SUB FP, IP, #4
 	@ r0 = tablero
 	@ r1 = *longitud
@@ -66,7 +66,7 @@ nouno:
 	mov r0, #NO_HAY_PATRON @ return 0
 
 epilogo:
-	LDMIA SP, {r4-r10, FP, SP, PC}
+	LDMIA SP, {r4-r9, FP, SP, PC}
 
 
 .end
