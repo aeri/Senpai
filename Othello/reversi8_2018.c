@@ -4,6 +4,8 @@
 #include "timer.h"
 #include "44blib.h"
 #include "44b.h"
+//Selector de modo de prueba a modo de juego
+//#define PRUEBA
 
 // Tamaño del tablero
 enum { DIM=8 };
@@ -21,8 +23,8 @@ FICHA_BLANCA = 1,
 FICHA_NEGRA = 2
 };
 
-//Selector de modo de prueba a modo de juego
-const int PRUEBA = 0;
+
+
 //Número de pruebas a realizar en el test
 enum { NP = 5 };
 
@@ -59,7 +61,7 @@ signed const char vSC[DIM] = { 0, 1, 1, 1, 0,-1,-1,-1};
 
 
 
-
+#ifdef PRUEBA
 char __attribute__ ((aligned (8))) tableros[NP][DIM][DIM] = {
 	        {{CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
 	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
@@ -160,7 +162,7 @@ char movimientos[NP][2] = {
 };
 
 
-
+#endif
 
 
 
@@ -563,6 +565,12 @@ void reversi8()
 
 	Eint4567_init();	// inicializamos los pulsadores. Cada vez que se pulse se ver� reflejado en el 8led
 	D8Led_init();       // inicializamos el 8led
+	timer2_inicializar();	    // Inicializacion del temporizador
+	timer2_empezar();
+
+
+	Delay (45);
+	volatile int tiempo = timer2_leer();
 
 	//Iterador para cargar y comprobar tableros de forma sucesiva
 	int i = 0;
@@ -596,7 +604,8 @@ void reversi8()
     while (fin == 0)
     {
         move = 0;
-        if (PRUEBA == 1){
+#ifdef PRUEBA
+
         	a = 0;
         	b = 0;
 			while (a < DIM){
@@ -610,7 +619,8 @@ void reversi8()
         	fila=movimientos[i][0];
         	columna=movimientos[i][1];
         	ready = 1;
-        }
+
+#endif
         esperar_mov(&ready);
         // si la fila o columna son 8 asumimos que el jugador no puede mover
         if (((fila) != DIM) && ((columna) != DIM))
@@ -621,7 +631,8 @@ void reversi8()
             actualizar_candidatas(candidatas, fila, columna);
             move = 1;
         }
-        if (PRUEBA == 1){
+#ifdef PRUEBA
+
         	j = 0;
         	k = 0;
         	while (j < DIM){
@@ -639,8 +650,9 @@ void reversi8()
         	if (i == NP){
         		fin = 1;
         	}
-        }
-        if (PRUEBA == 0){
+
+#else
+
         		// escribe el movimiento en las variables globales fila columna
 				done = elegir_mov(candidatas, tablero, &f, &c);
 				if (done == -1)
@@ -654,7 +666,8 @@ void reversi8()
 					actualizar_tablero(tablero, f, c, FICHA_BLANCA);
 					actualizar_candidatas(candidatas, f, c);
 				}
-		}
+
+#endif
 		contar(tablero, &blancas, &negras);
     }
 }

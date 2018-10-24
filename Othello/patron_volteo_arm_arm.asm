@@ -5,7 +5,7 @@
 .equ	NO_HAY_PATRON, 0
 patron_volteo_arm_arm:
 	MOV IP,SP
-	STMDB SP!, {r4-r10,FP,IP,LR,PC}
+	STMDB SP!, {r4-r9,FP,IP,LR,PC}
 	SUB FP, IP, #4
 	@ r0 = tablero
 	@ r1 = *longitud
@@ -27,9 +27,9 @@ patron_volteo_arm_arm:
 	bge else
 	cmp r3, #0
 	blt else
-	mov r8, r2, LSL #3 @Calculamos la posición del tablero
-	add r8, r8, r3
-	add r8, r0, r8
+	@mov r8, r2, LSL #3
+	add r8, r3, r2, LSL #3 @Calculamos la posición del tablero
+	add r8, r0, r8 @Sumamos la posición inicial del tablero
 	ldrb r8, [r8]
 	cmp r8, #CASILLA_VACIA
 	beq else
@@ -66,7 +66,7 @@ nouno:
 	mov r0, #NO_HAY_PATRON @ return 0
 
 epilogo:
-	LDMIA SP, {r4-r10, FP, SP, PC}
+	LDMIA SP, {r4-r9, FP, SP, PC}
 
 
 .end
