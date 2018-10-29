@@ -15,7 +15,7 @@ FICHA_NEGRA = 2
 };
 
 //Selector de modo de prueba a modo de juego
-const int PRUEBA = 0;
+const int PRUEBA = 1;
 //Número de pruebas a realizar en el test
 enum { NP = 5 };
 

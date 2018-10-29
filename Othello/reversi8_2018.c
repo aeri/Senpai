@@ -4,8 +4,10 @@
 #include "timer.h"
 #include "44blib.h"
 #include "44b.h"
+#include "fail.h"
 //Selector de modo de prueba a modo de juego
 //#define PRUEBA
+#define EXCEPT
 
 // Tamaño del tablero
 enum { DIM=8 };
@@ -196,7 +198,9 @@ volatile unsigned char fila=0, columna=0, ready = 0;
 int patron_volteo(char tablero[][DIM], int *longitud, char FA, char CA, signed char SF, signed char SC, char color);
 extern int patron_volteo_arm_c(char tablero[][8], int *longitud,char f, char c, signed char SF, signed char SC, char color);
 extern int patron_volteo_arm_arm(char tablero[][8], int *longitud,char f, char c, signed char SF, signed char SC, char color);
-
+#ifdef EXCEPT
+extern void Abort();
+#endif
 
 int patron_volteo_test(char tablero[][DIM], int *longitud, char FA, char CA, signed char SF, signed char SC, char color){
 	int longc = *longitud;
@@ -569,8 +573,14 @@ void reversi8()
 	timer2_empezar();
 
 
-	Delay (45);
-	volatile int tiempo = timer2_leer();
+	/*Delay (45);
+	volatile int tiempo = timer2_leer();*/
+#ifdef EXCEPT
+	excepciones_inicializar();
+	Abort();
+	volatile int tipo_excepcion2 = tipo_excepcion;
+	volatile unsigned int direccion2 = direccion;
+#endif
 
 	//Iterador para cargar y comprobar tableros de forma sucesiva
 	int i = 0;
