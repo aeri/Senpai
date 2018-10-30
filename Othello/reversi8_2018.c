@@ -2,9 +2,11 @@
 #include "button.h"
 #include "led.h"
 #include "timer.h"
+#include "timer0.h"
 #include "44blib.h"
 #include "44b.h"
 #include "fail.h"
+#include "botones_antirrebotes.h"
 //Selector de modo de prueba a modo de juego
 //#define PRUEBA
 #define EXCEPT
@@ -682,3 +684,22 @@ void reversi8()
     }
 }
 
+void reversi_main() {
+	sys_init();         // Inicializacion de la placa, interrupciones y puertos
+	Eint4567_init();	// inicializamos los pulsadores. Cada vez que se pulse se ver� reflejado en el 8led
+	D8Led_init();       // inicializamos el 8led
+	timer2_inicializar();	    // Inicializacion del temporizador
+	timer2_empezar();
+	botones_antirrebotes_init();
+	timer_init(); //Iniciar el timer0
+	while(1) {
+		if(interrupcion_button == true){
+			interrupcion_button = false;
+			boton_pulsado();
+		}
+		else if(interrupcion_timer0 == true){
+			interrupcion_timer0 = false;
+			timer_interruption();
+		}
+	}
+}

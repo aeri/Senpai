@@ -4,11 +4,21 @@
 * Descrip:	Funciones de manejo de los pulsadores (EINT6-7)
 * Version:
 *********************************************************************************************/
-
+#include "stdbool.h"
 #ifndef _BUTTON_H_
 #define _BUTTON_H_
 
-/*--- declaracion de funciones visibles del módulo button.c/button.h ---*/
+/*--- declaracion de funciones visibles del mï¿½dulo button.c/button.h ---*/
+
+/* declaraciï¿½n de funciï¿½n que es rutina de servicio de interrupciï¿½n
+ * https://gcc.gnu.org/onlinedocs/gcc/ARM-Function-Attributes.html */
+volatile bool interrupcion_button;
+
+void Eint4567_ISR(void) __attribute__((interrupt("IRQ")));
 void Eint4567_init(void);
+
+unsigned int button_estado();
+
+void button_empezar(void *callback);
 
 #endif /* _BUTTON_H_ */

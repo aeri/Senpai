@@ -15,30 +15,16 @@
 /*--- variables globales del m�dulo ---*/
 /* int_count la utilizamos para sacar un n�mero por el 8led.
   Cuando se pulsa un bot�n sumamos y con el otro restamos. �A veces hay rebotes! */
-static volatile unsigned int int_count = 0;
-
-/* declaraci�n de funci�n que es rutina de servicio de interrupci�n
- * https://gcc.gnu.org/onlinedocs/gcc/ARM-Function-Attributes.html */
-void Eint4567_ISR(void) __attribute__((interrupt("IRQ")));
+//static volatile unsigned int int_count = 0;
 
 /*--- codigo de funciones ---*/
 void Eint4567_ISR(void)
 {
+	rINTMSK |= BIT_EINT4567; //Se desactivan las interrupciones del botón
+	interrupcion_button = true;
 	/* Identificar la interrupcion (hay dos pulsadores)*/
-	int which_int = rEXTINTPND;
-	switch (which_int)
-	{
-		case 4:
-			int_count++; // incrementamos el contador
-			break;
-		case 8:
-			int_count--; // decrementamos el contador
-			break;
-		default:
-			break;
-	}
 	// }
-	D8Led_symbol(int_count & 0x000f); // sacamos el valor por pantalla (m�dulo 16)
+	//D8Led_symbol(int_count & 0x000f); // sacamos el valor por pantalla (m�dulo 16)
 
 	/* Finalizar ISR */
 	rEXTINTPND = 0xf;				// borra los bits en EXTINTPND
@@ -65,4 +51,15 @@ void Eint4567_init(void)
 	/* Por precaucion, se vuelven a borrar los bits de INTPND y EXTINTPND */
 	rI_ISPC    |= (BIT_EINT4567);
 	rEXTINTPND = 0xf;
+	interrupcion_button = false;
 }
+
+unsigned int button_estado(){
+	return rPDATG & 0xc0;
+}
+
+void button_empezar(void *callback){
+	rINTMSK &= ~(BIT_EINT4567); // Se activan interrupciones
+	pISR_EINT4567 = (int) callback; // Se vincula la función callback para que se salte a ella en una interrupción del botón
+}
+
