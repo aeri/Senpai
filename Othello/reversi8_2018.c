@@ -692,14 +692,5 @@ void reversi_main() {
 	timer2_empezar();
 	botones_antirrebotes_init();
 	timer_init(); //Iniciar el timer0
-	while(1) {
-		if(interrupcion_button == true){
-			interrupcion_button = false;
-			boton_pulsado();
-		}
-		else if(interrupcion_timer0 == true){
-			interrupcion_timer0 = false;
-			timer_interruption();
-		}
-	}
+	while(1);
 }

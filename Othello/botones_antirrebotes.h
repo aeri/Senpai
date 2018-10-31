@@ -3,7 +3,7 @@
 
 #include "button.h"
 
-void botones_antirrebotes_init();
+void boton_callback();
 
 void boton_pulsado();
 

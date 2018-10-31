@@ -8,7 +8,6 @@
 #ifndef _TIMER0_H_
 #define _TIMER0_H_
 
-volatile bool interrupcion_timer0;
 /*--- variables visibles del m�dulo timer.c/timer.h ---*/
 int switch_leds;
 

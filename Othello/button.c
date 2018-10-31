@@ -11,17 +11,21 @@
 #include "44blib.h"
 #include "44b.h"
 #include "def.h"
+#include "botones_antirrebotes.h"
 
 /*--- variables globales del m�dulo ---*/
 /* int_count la utilizamos para sacar un n�mero por el 8led.
   Cuando se pulsa un bot�n sumamos y con el otro restamos. �A veces hay rebotes! */
 //static volatile unsigned int int_count = 0;
 
+volatile bool interrupcion_button;
+
 /*--- codigo de funciones ---*/
 void Eint4567_ISR(void)
 {
 	rINTMSK |= BIT_EINT4567; //Se desactivan las interrupciones del botón
-	interrupcion_button = true;
+	push_debug(0x01, 0xBEBACAFE);
+	boton_callback();
 	/* Identificar la interrupcion (hay dos pulsadores)*/
 	// }
 	//D8Led_symbol(int_count & 0x000f); // sacamos el valor por pantalla (m�dulo 16)
@@ -60,6 +64,6 @@ unsigned int button_estado(){
 
 void button_empezar(void *callback){
 	rINTMSK &= ~(BIT_EINT4567); // Se activan interrupciones
-	pISR_EINT4567 = (int) callback; // Se vincula la función callback para que se salte a ella en una interrupción del botón
+	//pISR_EINT4567 = (int) callback; // Se vincula la función callback para que se salte a ella en una interrupción del botón
+	//boton_callback = callback;
 }
-

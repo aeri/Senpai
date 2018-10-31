@@ -21,7 +21,7 @@ enum {
     tres      = ~0xEA,
     cuatro    = ~0x63,
     cinco     = ~0xAB,
-    seis      = ~0x2F,
+    seis      = ~0xAF,
     siete     = ~0xE0,
     ocho      = ~0xEF,
     nueve     = ~0xE3,
@@ -35,7 +35,7 @@ enum {
     size_8led = 17 };
 
 
-/*--- declaración de funciones visibles del módulo 8led.c/8led.h ---*/
+/*--- declaraciï¿½n de funciones visibles del mï¿½dulo 8led.c/8led.h ---*/
 void D8Led_init(void);
 void D8Led_symbol(int value);
 
