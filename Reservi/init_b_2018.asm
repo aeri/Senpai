@@ -30,7 +30,7 @@ Reset_Handler:
         MOV     sp, #0x4000      /*  set up stack pointer (r13) */ 
 
 .extern     reversi8
-        ldr         r5, = reversi8
+        ldr         r5, = reversi_main
         mov         lr, pc 
         bx          r5 
 

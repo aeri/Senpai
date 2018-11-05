@@ -4,8 +4,8 @@
 #include "stdlib.h"
 
 void excepciones_ISR( void ) __attribute__((interrupt ( "ABORT" )));
-/*void excepciones_ISR( void ) __attribute__((interrupt ( UNDEF )));
-void excepciones_ISR( void ) __attribute__((interrupt ( SWI ))); */
+void excepciones_ISR( void ) __attribute__((interrupt ( "UNDEF" )));
+void excepciones_ISR( void ) __attribute__((interrupt ( "SWI" )));
 
 void excepciones_ISR(void){
 	__asm__("ldr r0, =tipo_excepcion\n"
@@ -21,6 +21,6 @@ void excepciones_ISR(void){
 void excepciones_inicializar(void){
 	pISR_PABORT = (unsigned) excepciones_ISR;
 	pISR_DABORT = (unsigned) excepciones_ISR;
-	/*pISR_UNDEF = (unsigned) excepciones_ISR;
-	pISR_SWI = (unsigned) excepciones_ISR;*/
+	pISR_UNDEF = (unsigned) excepciones_ISR;
+	pISR_SWI = (unsigned) excepciones_ISR;
 }

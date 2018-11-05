@@ -4,7 +4,7 @@
 * Descrip:		funciones de control del timer0 del s3c44b0x
 * Version:
 *********************************************************************************************/
-//#define SIM
+#define SIM
 /*--- ficheros de cabecera ---*/
 #include "timer0.h"
 #include "stdbool.h"

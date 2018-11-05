@@ -4,7 +4,7 @@
 * Descrip:	Funciones de manejo de los pulsadores (EINT6-7)
 * Version:
 *********************************************************************************************/
-//#define SIM
+#define SIM
 /*--- ficheros de cabecera ---*/
 #include "button.h"
 

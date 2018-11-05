@@ -1,15 +1,20 @@
-#include "8led.h"
-#include "button.h"
+//#define SIM
+//#define EXCEPT
+
+#ifndef SIM
 #include "led.h"
 #include "timer.h"
-#include "timer0.h"
 #include "44blib.h"
 #include "44b.h"
 #include "fail.h"
+#endif
+
+#include "8led.h"
+#include "button.h"
+#include "timer0.h"
 #include "botones_antirrebotes.h"
 //Selector de modo de prueba a modo de juego
 //#define PRUEBA
-#define EXCEPT
 
 // Tamaño del tablero
 enum { DIM=8 };
@@ -204,6 +209,7 @@ extern int patron_volteo_arm_arm(char tablero[][8], int *longitud,char f, char c
 extern void Abort();
 #endif
 
+#ifndef SIM
 int patron_volteo_test(char tablero[][DIM], int *longitud, char FA, char CA, signed char SF, signed char SC, char color){
 	int longc = *longitud;
 	int longarmc = *longitud;
@@ -226,6 +232,7 @@ int patron_volteo_test(char tablero[][DIM], int *longitud, char FA, char CA, sig
 	*longitud=longc;
 	return respuestac;
 }
+#endif
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -416,7 +423,7 @@ int actualizar_tablero(char tablero[][DIM], char f, char c, char color)
         SC = vSC[i];
         // flip: numero de fichas a voltear
         flip = 0;
-        patron = patron_volteo_test(tablero, &flip, f, c, SF, SC, color);
+        patron = patron_volteo(tablero, &flip, f, c, SF, SC, color);
         //printf("Flip: %d \n", flip);
         if (patron == PATRON_ENCONTRADO )
         {
@@ -467,7 +474,7 @@ int elegir_mov(char candidatas[][DIM], char tablero[][DIM], unsigned char *f, un
 
                         // nos dice qué hay que voltear en cada dirección
                         longitud = 0;
-                        patron = patron_volteo_test(tablero, &longitud, i, j, SF, SC, FICHA_BLANCA);
+                        patron = patron_volteo(tablero, &longitud, i, j, SF, SC, FICHA_BLANCA);
                         //  //printf("%d ", patron);
                         if (patron == PATRON_ENCONTRADO)
                         {
@@ -567,12 +574,7 @@ void actualizar_candidatas(char candidatas[][DIM], char f, char c)
 // Sólo que la máquina realice un movimiento correcto.
 void reversi8()
 {
-	sys_init();         // Inicializacion de la placa, interrupciones y puertos
 
-	Eint4567_init();	// inicializamos los pulsadores. Cada vez que se pulse se ver� reflejado en el 8led
-	D8Led_init();       // inicializamos el 8led
-	timer2_inicializar();	    // Inicializacion del temporizador
-	timer2_empezar();
 
 
 	/*Delay (45);
@@ -685,12 +687,33 @@ void reversi8()
 }
 
 void reversi_main() {
+#ifndef SIM
 	sys_init();         // Inicializacion de la placa, interrupciones y puertos
 	Eint4567_init();	// inicializamos los pulsadores. Cada vez que se pulse se ver� reflejado en el 8led
 	D8Led_init();       // inicializamos el 8led
 	timer2_inicializar();	    // Inicializacion del temporizador
 	timer2_empezar();
-	botones_antirrebotes_init();
 	timer_init(); //Iniciar el timer0
-	while(1);
+#else
+	unsigned volatile int timer_int, button_state;
+	volatile int led8_state;
+	button_state, timer_int = 0;
+#endif
+	botones_antirrebotes_init();
+
+	while(1){
+#ifdef SIM
+		if(timer_int == 1){
+			timer_int = 0;
+			interrumpirTimer();
+		}
+		if(button_estado() != button_state){
+			cambiar_estado(button_state);
+			if (button_state > 0){
+				boton_callback();
+			}
+		}
+		led8_state = getState8led();
+#endif
+	}
 }

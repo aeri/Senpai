@@ -1,6 +1,6 @@
 #include "botones_antirrebotes.h"
 
-//#define SIM
+#define SIM
 #include "8led.h"
 #include "button.h"
 typedef enum { inicio, boton_pressed, leer_boton} maquina_estados;

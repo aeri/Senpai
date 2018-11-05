@@ -1,7 +1,7 @@
 #ifndef _BOTONES_ANTIRREBOTES_H_
 #define _BOTONES_ANTIRREBOTES_H_
 
-//#define SIM
+#define SIM
 
 #ifndef SIM
 #include "button.h"

@@ -4,7 +4,7 @@
 * Descrip:	Funciones de control del display 8-segmentos
 * Version:
 *********************************************************************************************/
-//#define SIM
+#define SIM
 /*--- ficheros de cabecera ---*/
 #include "8led.h"
 #ifndef SIM

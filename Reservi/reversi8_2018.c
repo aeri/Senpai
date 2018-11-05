@@ -1,3 +1,21 @@
+#define SIM
+//#define EXCEPT
+
+#ifndef SIM
+#include "led.h"
+#include "timer.h"
+#include "44blib.h"
+#include "44b.h"
+#include "fail.h"
+#endif
+
+#include "8led.h"
+#include "button.h"
+#include "timer0.h"
+#include "botones_antirrebotes.h"
+//Selector de modo de prueba a modo de juego
+//#define PRUEBA
+
 // Tamaño del tablero
 enum { DIM=8 };
 
@@ -14,8 +32,8 @@ FICHA_BLANCA = 1,
 FICHA_NEGRA = 2
 };
 
-//Selector de modo de prueba a modo de juego
-const int PRUEBA = 1;
+
+
 //Número de pruebas a realizar en el test
 enum { NP = 5 };
 
@@ -52,7 +70,7 @@ signed const char vSC[DIM] = { 0, 1, 1, 1, 0,-1,-1,-1};
 
 
 
-
+#ifdef PRUEBA
 char __attribute__ ((aligned (8))) tableros[NP][DIM][DIM] = {
 	        {{CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
 	        {CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA,CASILLA_VACIA},
@@ -153,7 +171,7 @@ char movimientos[NP][2] = {
 };
 
 
-
+#endif
 
 
 
@@ -181,29 +199,40 @@ char __attribute__ ((aligned (8))) tablero[DIM][DIM] = {
      // VARIABLES PARA INTERACCIONAR CON LA ENTRADA SALIDA
      // Pregunta: ¿hay que hacer algo con ellas para que esto funcione bien?
      // (por ejemplo añadir alguna palabra clave para garantizar que la sincronización a través de esa variable funcione)
-volatile char fila=0, columna=0, ready = 0;
+volatile unsigned char fila=0, columna=0, ready = 0;
 
 
 int patron_volteo(char tablero[][DIM], int *longitud, char FA, char CA, signed char SF, signed char SC, char color);
 extern int patron_volteo_arm_c(char tablero[][8], int *longitud,char f, char c, signed char SF, signed char SC, char color);
 extern int patron_volteo_arm_arm(char tablero[][8], int *longitud,char f, char c, signed char SF, signed char SC, char color);
+#ifdef EXCEPT
+extern void Abort();
+#endif
 
-
+#ifndef SIM
 int patron_volteo_test(char tablero[][DIM], int *longitud, char FA, char CA, signed char SF, signed char SC, char color){
 	int longc = *longitud;
 	int longarmc = *longitud;
 	int longarmarm = *longitud;
+	timer2_inicializar();	    // Inicializacion del temporizador
+	timer2_empezar();
+
+	volatile unsigned int tiempo_comienzo1 = timer2_leer();
 	int respuestac = patron_volteo(tablero, &longc, FA, CA, SF, SC, color);
+	volatile unsigned int tiempoc = timer2_leer() - tiempo_comienzo1;
+
+	volatile unsigned int tiempo_comienzo2 = timer2_leer();
 	int respuestarmc = patron_volteo_arm_c(tablero, &longarmc, FA, CA, SF, SC, color);
+	volatile unsigned int tiempoarmc = timer2_leer() - tiempo_comienzo2;
+
+	volatile unsigned int tiempo_comienzo3 = timer2_leer();
 	int respuestarmarm = patron_volteo_arm_arm(tablero, &longarmarm, FA, CA, SF, SC, color);
-
-	if (respuestac!=respuestarmc || respuestarmc!=respuestarmarm || longc!=longarmc || longarmc!=longarmarm){
-		while (1);/*La respuesta no es correcta*/
-	}
-
-	*longitud=longarmc;
-	return respuestarmc;
+	volatile unsigned int tiempoarmarm = timer2_parar() - tiempo_comienzo3;
+	while (respuestac!=respuestarmc || respuestarmc!=respuestarmarm || longc!=longarmc || longarmc!=longarmarm){/*La respuesta no es correcta*/}
+	*longitud=longc;
+	return respuestac;
 }
+#endif
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -366,7 +395,7 @@ int patron_volteo(char tablero[][DIM], int *longitud, char FA, char CA, signed c
 // SF y SC son las cantidades a sumar para movernos en la dirección que toque
 // color indica el color de la pieza que se acaba de colocar
 // FA y CA son la fila y columna a analizar
-void voltear(char tablero[][DIM], char FA, char CA, char SF, char SC, int n, char color)
+void voltear(char tablero[][DIM], char FA, char CA, signed char SF, signed char SC, int n, char color)
 {
     int i;
 
@@ -394,7 +423,7 @@ int actualizar_tablero(char tablero[][DIM], char f, char c, char color)
         SC = vSC[i];
         // flip: numero de fichas a voltear
         flip = 0;
-        patron = patron_volteo_test(tablero, &flip, f, c, SF, SC, color);
+        patron = patron_volteo(tablero, &flip, f, c, SF, SC, color);
         //printf("Flip: %d \n", flip);
         if (patron == PATRON_ENCONTRADO )
         {
@@ -414,14 +443,14 @@ int actualizar_tablero(char tablero[][DIM], char f, char c, char color)
 // NO    0
 // SI    1
 // CASILLA_OCUPADA 2
-int elegir_mov(char candidatas[][DIM], char tablero[][DIM], char *f, char *c)
+int elegir_mov(char candidatas[][DIM], char tablero[][DIM], unsigned char *f, unsigned char *c)
 {
     int i, j, k, found;
     int mf = -1; // almacena la fila del mejor movimiento encontrado
     int mc;      // almacena la columna del mejor movimiento encontrado
     char mejor = 0; // almacena el mejor valor encontrado
     int patron, longitud;
-    char SF, SC; // cantidades a sumar para movernos en la dirección que toque
+    signed char SF, SC; // cantidades a sumar para movernos en la dirección que toque
 
     // Recorremos todo el tablero comprobando dónde podemos mover
     // Comparamos la puntuación de los movimientos encontrados y nos quedamos con el mejor
@@ -445,7 +474,7 @@ int elegir_mov(char candidatas[][DIM], char tablero[][DIM], char *f, char *c)
 
                         // nos dice qué hay que voltear en cada dirección
                         longitud = 0;
-                        patron = patron_volteo_test(tablero, &longitud, i, j, SF, SC, FICHA_BLANCA);
+                        patron = patron_volteo(tablero, &longitud, i, j, SF, SC, FICHA_BLANCA);
                         //  //printf("%d ", patron);
                         if (patron == PATRON_ENCONTRADO)
                         {
@@ -545,6 +574,18 @@ void actualizar_candidatas(char candidatas[][DIM], char f, char c)
 // Sólo que la máquina realice un movimiento correcto.
 void reversi8()
 {
+
+
+
+	/*Delay (45);
+	volatile int tiempo = timer2_leer();*/
+#ifdef EXCEPT
+	excepciones_inicializar();
+	Abort();
+	volatile int tipo_excepcion2 = tipo_excepcion;
+	volatile unsigned int direccion2 = direccion;
+#endif
+
 	//Iterador para cargar y comprobar tableros de forma sucesiva
 	int i = 0;
 	 ////////////////////////////////////////////////////////////////////
@@ -577,7 +618,8 @@ void reversi8()
     while (fin == 0)
     {
         move = 0;
-        if (PRUEBA == 1){
+#ifdef PRUEBA
+
         	a = 0;
         	b = 0;
 			while (a < DIM){
@@ -591,7 +633,8 @@ void reversi8()
         	fila=movimientos[i][0];
         	columna=movimientos[i][1];
         	ready = 1;
-        }
+
+#endif
         esperar_mov(&ready);
         // si la fila o columna son 8 asumimos que el jugador no puede mover
         if (((fila) != DIM) && ((columna) != DIM))
@@ -602,7 +645,8 @@ void reversi8()
             actualizar_candidatas(candidatas, fila, columna);
             move = 1;
         }
-        if (PRUEBA == 1){
+#ifdef PRUEBA
+
         	j = 0;
         	k = 0;
         	while (j < DIM){
@@ -620,8 +664,9 @@ void reversi8()
         	if (i == NP){
         		fin = 1;
         	}
-        }
-        if (PRUEBA == 0){
+
+#else
+
         		// escribe el movimiento en las variables globales fila columna
 				done = elegir_mov(candidatas, tablero, &f, &c);
 				if (done == -1)
@@ -635,8 +680,40 @@ void reversi8()
 					actualizar_tablero(tablero, f, c, FICHA_BLANCA);
 					actualizar_candidatas(candidatas, f, c);
 				}
-		}
+
+#endif
 		contar(tablero, &blancas, &negras);
     }
 }
 
+void reversi_main() {
+#ifndef SIM
+	sys_init();         // Inicializacion de la placa, interrupciones y puertos
+	Eint4567_init();	// inicializamos los pulsadores. Cada vez que se pulse se ver� reflejado en el 8led
+	D8Led_init();       // inicializamos el 8led
+	timer2_inicializar();	    // Inicializacion del temporizador
+	timer2_empezar();
+	timer_init(); //Iniciar el timer0
+#else
+	unsigned volatile int timer_int, button_state;
+	volatile int led8_state;
+	button_state, timer_int = 0;
+#endif
+	botones_antirrebotes_init();
+
+	while(1){
+#ifdef SIM
+		if(timer_int == 1){
+			timer_int = 0;
+			interrumpirTimer();
+		}
+		if(button_estado() != button_state){
+			cambiar_estado(button_state);
+			if (button_state > 0){
+				boton_callback();
+			}
+		}
+		led8_state = getState8led();
+#endif
+	}
+}

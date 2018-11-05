@@ -7,7 +7,7 @@
 #include "stdbool.h"
 #ifndef _BUTTON_H_
 #define _BUTTON_H_
-//#define SIM
+#define SIM
 
 /*--- declaracion de funciones visibles del m�dulo button.c/button.h ---*/
 

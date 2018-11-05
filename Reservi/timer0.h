@@ -7,7 +7,7 @@
 #include "stdbool.h"
 #ifndef _TIMER0_H_
 #define _TIMER0_H_
-//#define SIM
+#define SIM
 /*--- variables visibles del m�dulo timer.c/timer.h ---*/
 #ifndef SIM
 int switch_leds;
