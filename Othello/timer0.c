@@ -17,6 +17,7 @@
 
 /*--- variables globales ---*/
 int switch_leds = 0;
+volatile unsigned int count = 0;
 static volatile int latido = 25;
 static volatile bool led_rebote = false;
 /* declaraci�n de funci�n que es rutina de servicio de interrupci�n
@@ -27,6 +28,7 @@ volatile bool interrupcion_timer0;
 /*--- codigo de las funciones ---*/
 void timer_ISR(void)
 {
+	count++;
 	switch_leds = 1;
 	timer_interruption();
 	if(latido != 0){
@@ -46,6 +48,10 @@ void timer_ISR(void)
 
 	/* borrar bit en I_ISPC para desactivar la solicitud de interrupci�n*/
 	rI_ISPC |= BIT_TIMER0; // BIT_TIMER0 est� definido en 44b.h y pone un uno en el bit 13 que correponde al Timer0
+}
+
+unsigned int interrupcionesTimer(){
+	return count;
 }
 
 void timer_init(void)
@@ -69,9 +75,5 @@ void timer_init(void)
 	rTCON &= 0xFFFFFFFD;
 	rTCON |= 0xD;
 	interrupcion_timer0 = false;
-}
-#else
-void interrumpirTimer(){
-	timer_interruption();
 }
 #endif

@@ -7,6 +7,8 @@
 #include "button.h"
 #endif
 
+void button_callback();
+
 void botones_antirrebotes_init();
 
 void boton_callback();

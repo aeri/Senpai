@@ -6,6 +6,8 @@
 typedef enum { inicio, boton_pressed, leer_boton} maquina_estados;
 maquina_estados estado;
 
+volatile unsigned int estado_boton;
+
 int interrupciones_rebotes;
 int interrupciones_retardo; // Interrupciones a esperar antes de leer el valor del boton
 int retardo_trd;
@@ -14,36 +16,28 @@ static unsigned int count = 0;
 
 void botones_antirrebotes_init(){
 	estado = inicio;
+	estado_boton = 0x0;
 }
 
-void boton_callback(){
-	switch(estado){
-	case inicio:
-		estado = boton_pressed;
-		interrupciones_retardo = 2; // Se van a esperar 2 interrupciones antes de leer el valor del boton
-		break;
-	case boton_pressed:
-		break;
-	case leer_boton:
-		break;
-	/*case boton_soltado:
-		break;*/
-	default:
-		while(1); // Aqui falla algo...
-	}
+void button_callback(int estado){
+	estado_boton = estado;
 }
-
 void timer_interruption(){
 	unsigned int state = button_estado();
 	switch(estado){
 	case inicio:
+		if(estado_boton != 0x0){
+			estado = boton_pressed;
+			interrupciones_retardo = 2;
+		}
 		break;
 	case boton_pressed:
 		if(interrupciones_retardo == 0){
 			if ((state != 0x80) && (state != 0x40)) {	//si no estamos pulsando ningun boton
 				estado = inicio; //declaramos como siguiente estado rebotes_bajada
 #ifndef SIM
-				button_empezar(Eint4567_ISR);
+				estado_boton = 0x0;
+				button_empezar();
 #endif
 			}
 
@@ -76,7 +70,8 @@ void timer_interruption(){
 		if(retardo_trd == 0){
 			estado = inicio;
 #ifndef SIM
-			button_empezar(Eint4567_ISR);
+			estado_boton = 0x0;
+			button_empezar();
 #endif
 		}
 		else{

@@ -207,6 +207,8 @@ extern int patron_volteo_arm_c(char tablero[][8], int *longitud,char f, char c, 
 extern int patron_volteo_arm_arm(char tablero[][8], int *longitud,char f, char c, signed char SF, signed char SC, char color);
 #ifdef EXCEPT
 extern void Abort();
+extern void Undef();
+extern void SWI();
 #endif
 
 #ifndef SIM
@@ -579,12 +581,7 @@ void reversi8()
 
 	/*Delay (45);
 	volatile int tiempo = timer2_leer();*/
-#ifdef EXCEPT
-	excepciones_inicializar();
-	Abort();
-	volatile int tipo_excepcion2 = tipo_excepcion;
-	volatile unsigned int direccion2 = direccion;
-#endif
+
 
 	//Iterador para cargar y comprobar tableros de forma sucesiva
 	int i = 0;
@@ -699,13 +696,17 @@ void reversi_main() {
 	volatile int led8_state;
 	button_state, timer_int = 0;
 #endif
+#ifdef EXCEPT
+	excepciones_inicializar();
+	Undef();
+#endif
 	botones_antirrebotes_init();
-
+	unsigned int interrupciones1 = interrupcionesTimer();
 	while(1){
 #ifdef SIM
 		if(timer_int == 1){
 			timer_int = 0;
-			interrumpirTimer();
+			timer_interruption();
 		}
 		if(button_estado() != button_state){
 			cambiar_estado(button_state);
@@ -714,6 +715,12 @@ void reversi_main() {
 			}
 		}
 		led8_state = getState8led();
+#else
+		unsigned int interrupciones2 = interrupcionesTimer();
+		if(interrupciones2 > interrupciones1){
+			timer_interruption();
+			interrupciones1 = interrupciones2;
+		}
 #endif
 	}
 }

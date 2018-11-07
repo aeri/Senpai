@@ -2,7 +2,6 @@
 #include "pilaDebug.h"
 
 #define stack 0xC7FEFFC;
-#define top 0x0c7fef9c;
 uint32_t* pointer;
 int words = 0;
 

@@ -13,7 +13,8 @@
 #include "44blib.h"
 #include "44b.h"
 #include "def.h"
-
+#include "pilaDebug.h"
+#include "timer.h"
 #else
 /*
  * Leyenda
@@ -38,8 +39,9 @@ volatile bool interrupcion_button;
 void Eint4567_ISR(void)
 {
 	rINTMSK |= BIT_EINT4567; //Se desactivan las interrupciones del botón
-	push_debug(0x01, 0xBEBACAFE);
-	boton_callback();
+	button_callback(rPDATG & 0xc0);
+	unsigned int button_time = timer2_leer();
+	push_debug(0x03, button_time);
 	/* Identificar la interrupcion (hay dos pulsadores)*/
 	// }
 	//D8Led_symbol(int_count & 0x000f); // sacamos el valor por pantalla (m�dulo 16)
@@ -72,10 +74,11 @@ void Eint4567_init(void)
 	interrupcion_button = false;
 }
 
-void button_empezar(void *callback){
+void button_empezar(){
 	rINTMSK &= ~(BIT_EINT4567); // Se activan interrupciones
-	pISR_EINT4567 = (int) callback; // Se vincula la función callback para que se salte a ella en una interrupción del botón
+	//pISR_EINT4567 = (int) callback; // Se vincula la función callback para que se salte a ella en una interrupción del botón
 }
+
 #endif
 
 unsigned int button_estado(){

@@ -34,7 +34,8 @@ enum {
     E         = ~0x8F,
     F         = ~0x87,
     blank     = ~0x00,
-    size_8led = 17 };
+    U		  = ~0x6D,
+    size_8led = 18 };
 
 
 /*--- declaraci�n de funciones visibles del m�dulo 8led.c/8led.h ---*/

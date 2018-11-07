@@ -20,7 +20,7 @@ void Eint4567_init(void);
 
 
 
-void button_empezar(void *callback);
+void button_empezar();
 
 #else
 void cambiar_estado(int state);
