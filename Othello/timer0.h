@@ -18,4 +18,8 @@ void timer_init(void);
 void interrumpirTimer();
 #endif
 
+int interrucionesTimer();
+
+void resetTimer();
+
 #endif /* _TIMER0_H_ */

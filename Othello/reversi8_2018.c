@@ -691,6 +691,28 @@ void reversi_main() {
 	timer2_inicializar();	    // Inicializacion del temporizador
 	timer2_empezar();
 	timer_init(); //Iniciar el timer0
+	char __attribute__ ((aligned (8))) candidatas[DIM][DIM] =
+	    {
+	        {NO,NO,NO,NO,NO,NO,NO,NO},
+	        {NO,NO,NO,NO,NO,NO,NO,NO},
+	        {NO,NO,NO,NO,NO,NO,NO,NO},
+	        {NO,NO,NO,NO,NO,NO,NO,NO},
+	        {NO,NO,NO,NO,NO,NO,NO,NO},
+	        {NO,NO,NO,NO,NO,NO,NO,NO},
+	        {NO,NO,NO,NO,NO,NO,NO,NO},
+	        {NO,NO,NO,NO,NO,NO,NO,NO}
+	    };
+
+
+	int done;     // la máquina ha conseguido mover o no
+	int move = 0; // el humano ha conseguido mover o no
+	int blancas, negras; // número de fichas de cada color
+	int fin = 0;  // fin vale 1 si el humano no ha podido mover
+				  // (ha introducido un valor de movimiento con algún 8)
+				  // y luego la máquina tampoco puede
+	unsigned char f, c;    // fila y columna elegidas por la máquina para su movimiento
+
+	init_table(tablero, candidatas);
 #else
 	unsigned volatile int timer_int, button_state;
 	volatile int led8_state;
@@ -716,10 +738,39 @@ void reversi_main() {
 		}
 		led8_state = getState8led();
 #else
-		unsigned int interrupciones2 = interrupcionesTimer();
-		if(interrupciones2 > interrupciones1){
+		if(interrupcionesTimer() == 1){
+			resetTimer();
 			timer_interruption();
-			interrupciones1 = interrupciones2;
+			ready = getReady();
+			if(ready == 1){
+				resetReady();
+				fila = getFila();
+				columna = getColumna();
+				// si la fila o columna son 8 asumimos que el jugador no puede mover
+				if (((fila) != DIM) && ((columna) != DIM))
+				{
+
+					tablero[fila][columna] = FICHA_NEGRA;
+					actualizar_tablero(tablero, fila, columna, FICHA_NEGRA);
+					actualizar_candidatas(candidatas, fila, columna);
+					move = 1;
+				}
+
+				// escribe el movimiento en las variables globales fila columna
+				done = elegir_mov(candidatas, tablero, &f, &c);
+				if (done == -1)
+				{
+					if (move == 0)
+						fin = 1;
+				}
+				else
+				{
+					tablero[f][c] = FICHA_BLANCA;
+					actualizar_tablero(tablero, f, c, FICHA_BLANCA);
+					actualizar_candidatas(candidatas, f, c);
+				}
+				contar(tablero, &blancas, &negras);
+			}
 		}
 #endif
 	}

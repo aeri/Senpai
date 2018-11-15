@@ -28,7 +28,7 @@ volatile bool interrupcion_timer0;
 /*--- codigo de las funciones ---*/
 void timer_ISR(void)
 {
-	count++;
+	count = 1;
 	switch_leds = 1;
 	timer_interruption();
 	if(latido != 0){
@@ -52,6 +52,10 @@ void timer_ISR(void)
 
 unsigned int interrupcionesTimer(){
 	return count;
+}
+
+void resetTimer(){
+	count = 0;
 }
 
 void timer_init(void)

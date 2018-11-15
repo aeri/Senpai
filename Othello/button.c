@@ -41,7 +41,7 @@ void Eint4567_ISR(void)
 	rINTMSK |= BIT_EINT4567; //Se desactivan las interrupciones del botón
 	button_callback(rPDATG & 0xc0);
 	unsigned int button_time = timer2_leer();
-	push_debug(0x03, button_time);
+	//push_debug(0x03, button_time);
 	/* Identificar la interrupcion (hay dos pulsadores)*/
 	// }
 	//D8Led_symbol(int_count & 0x000f); // sacamos el valor por pantalla (m�dulo 16)

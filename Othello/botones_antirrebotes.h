@@ -17,4 +17,12 @@ void boton_pulsado();
 
 void timer_interruption();
 
+char getReady();
+
+char getFila();
+
+char getColumna();
+
+void resetReady();
+
 #endif
