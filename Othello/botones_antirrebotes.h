@@ -15,7 +15,9 @@ void boton_callback();
 
 void boton_pulsado();
 
-void timer_interruption();
+int antirrebotes();
+
+int getBoton();
 
 char getReady();
 

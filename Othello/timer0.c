@@ -30,7 +30,6 @@ void timer_ISR(void)
 {
 	count = 1;
 	switch_leds = 1;
-	timer_interruption();
 	if(latido != 0){
 		latido--;
 	}

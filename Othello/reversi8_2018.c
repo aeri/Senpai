@@ -1,18 +1,15 @@
 //#define SIM
 //#define EXCEPT
 
-#ifndef SIM
 #include "led.h"
 #include "timer.h"
 #include "44blib.h"
 #include "44b.h"
 #include "fail.h"
-#endif
-
 #include "8led.h"
 #include "button.h"
 #include "timer0.h"
-#include "botones_antirrebotes.h"
+#include "jugada_por_botones.h"
 //Selector de modo de prueba a modo de juego
 //#define PRUEBA
 
@@ -722,9 +719,8 @@ void reversi_main() {
 	excepciones_inicializar();
 	Undef();
 #endif
-	botones_antirrebotes_init();
-	unsigned int interrupciones1 = interrupcionesTimer();
-	while(1){
+	jugada_init();
+	while(fin == 0){
 #ifdef SIM
 		if(timer_int == 1){
 			timer_int = 0;
@@ -740,7 +736,7 @@ void reversi_main() {
 #else
 		if(interrupcionesTimer() == 1){
 			resetTimer();
-			timer_interruption();
+			jugada_botones();
 			ready = getReady();
 			if(ready == 1){
 				resetReady();

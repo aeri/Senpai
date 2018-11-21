@@ -1,7 +1,6 @@
 #include "botones_antirrebotes.h"
 
 //#define SIM
-#include "8led.h"
 #include "button.h"
 #include "stdbool.h"
 typedef enum { inicio, boton_pressed, leer_boton} maquina_estados;
@@ -9,46 +8,24 @@ maquina_estados estado;
 
 volatile unsigned int estado_boton;
 
-char fila, columna, ready;
 int interrupciones_rebotes;
-bool elige_fila;
-bool elige_columna;
-bool eligiendo; // 0, eligiendo fila, 1 eligiendo columna
 int interrupciones_retardo; // Interrupciones a esperar antes de leer el valor del boton
 int retardo_trd;
+int boton;
 
-static unsigned int count = 0;
 unsigned int state;
 
 void botones_antirrebotes_init(){
 	estado = inicio;
 	estado_boton = 0x0;
-	D8Led_symbol(15 & 0x000f);
-	elige_fila=true;
-	eligiendo = 0;
-	ready = (char) 0;
+	boton = 0;
 }
 
 void button_callback(int estado){
 	estado_boton = estado;
 }
 
-char getFila(){
-	return fila;
-}
-char getColumna(){
-	return columna;
-}
-
-void resetReady(){
-	ready = (char) 0;
-}
-
-char getReady(){
-	return ready;
-}
-
-void timer_interruption(){
+int antirrebotes(){
 	switch(estado){
 	case inicio:
 		if(estado_boton != 0x0){
@@ -61,54 +38,17 @@ void timer_interruption(){
 		if(interrupciones_retardo == 0){
 			if ((state != 0x80) && (state != 0x40)) {	//si no estamos pulsando ningun boton
 				estado = inicio; //declaramos como siguiente estado rebotes_bajada
-#ifndef SIM
 				estado_boton = 0x0;
 				button_empezar();
-#endif
 			}
 
 			else if(state == 0x80) { // Se ha pulsado el boton izquierdo
-				if(elige_fila){
-					count = 0;
-					elige_fila = false;
-				}
-				else if (elige_columna){
-					count = 0;
-					elige_columna = false;
-				}
-				else{
-					if (count == 8){
-						count = 0;
-					}
-					else{
-						count++;
-					}
-
-				}
-#ifndef SIM
-				D8Led_symbol(count & 0x000f);
-#else
-				cambiarEstado8led(count & 0x000f);
-#endif
+				boton = 1;
 				retardo_trd = 4;
 				estado = leer_boton;
 			}
 			else{ // Se ha pulsado el boton derecho
-				if (!eligiendo && !elige_fila && !elige_columna){
-					elige_columna=true;
-					D8Led_symbol(12 & 0x000f);
-					eligiendo = 1;
-					fila = (char) count;
-
-				}
-				else{
-					elige_fila=true;
-					D8Led_symbol(15 & 0x000f);
-					eligiendo = 0;
-					columna = (char) count;
-					ready = (char) 1;
-
-				}
+				boton = 2;
 				retardo_trd = 4;
 				estado = leer_boton;
 			}
@@ -118,13 +58,12 @@ void timer_interruption(){
 		}
 		break;
 	case leer_boton:
+		boton = 0;
 		state = button_estado();
 		if(retardo_trd == 0){
 			estado = inicio;
-#ifndef SIM
 			estado_boton = 0x0;
 			button_empezar();
-#endif
 		}
 		else{
 			if((state != 0x80) && (state != 0x40)){
@@ -138,4 +77,5 @@ void timer_interruption(){
 	default:
 		while(1); // Aqui falla algo...
 	}
+	return boton;
 }
