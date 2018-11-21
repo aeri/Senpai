@@ -11,6 +11,7 @@ volatile unsigned int estado_boton;
 int interrupciones_rebotes;
 int interrupciones_retardo; // Interrupciones a esperar antes de leer el valor del boton
 int retardo_trd;
+int retardo2;
 int boton;
 
 unsigned int state;
@@ -45,11 +46,13 @@ int antirrebotes(){
 			else if(state == 0x80) { // Se ha pulsado el boton izquierdo
 				boton = 1;
 				retardo_trd = 4;
+				retardo2 = 20;
 				estado = leer_boton;
 			}
 			else{ // Se ha pulsado el boton derecho
 				boton = 2;
 				retardo_trd = 4;
+				retardo2 = 20;
 				estado = leer_boton;
 			}
 		}
@@ -71,6 +74,17 @@ int antirrebotes(){
 			}
 			else{
 				retardo_trd = 4;
+				if(retardo2 == 0){
+					if(state == 0x80){
+						boton = 1;
+					}
+					retardo2 = 20;
+				}
+				else {
+					if(state == 0x80){
+						retardo2--;
+					}
+				}
 			}
 		}
 		break;
