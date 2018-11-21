@@ -32,8 +32,6 @@ int state = 0x0;
   Cuando se pulsa un botón sumamos y con el otro restamos. ¡A veces hay rebotes! */
 //static volatile unsigned int int_count = 0;
 
-volatile bool interrupcion_button;
-
 /*--- codigo de funciones ---*/
 #ifndef SIM
 void Eint4567_ISR(void)
@@ -41,7 +39,7 @@ void Eint4567_ISR(void)
 	rINTMSK |= BIT_EINT4567; //Se desactivan las interrupciones del botón
 	button_callback(rPDATG & 0xc0);
 	unsigned int button_time = timer2_leer();
-	//push_debug(0x03, button_time);
+	push_debug(0x03, button_time);
 	/* Identificar la interrupcion (hay dos pulsadores)*/
 	// }
 	//D8Led_symbol(int_count & 0x000f); // sacamos el valor por pantalla (m�dulo 16)
@@ -71,7 +69,6 @@ void Eint4567_init(void)
 	/* Por precaucion, se vuelven a borrar los bits de INTPND y EXTINTPND */
 	rI_ISPC    |= (BIT_EINT4567);
 	rEXTINTPND = 0xf;
-	interrupcion_button = false;
 }
 
 void button_empezar(){

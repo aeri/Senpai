@@ -8,7 +8,7 @@ int words = 0;
 void push_debug(uint8_t ID_evento, uint32_t auxData){
 	if (words == 0){
 		pointer = (uint32_t *) stack;
-		words = 100;
+		words = 10;
 	}
 	uint32_t evento = ((uint32_t) ID_evento) << 24;
 	auxData &= 0x00ffffff;

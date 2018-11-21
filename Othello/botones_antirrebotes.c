@@ -52,8 +52,8 @@ void timer_interruption(){
 	switch(estado){
 	case inicio:
 		if(estado_boton != 0x0){
+			interrupciones_retardo = 4;
 			estado = boton_pressed;
-			interrupciones_retardo = 2;
 		}
 		break;
 	case boton_pressed:
@@ -90,32 +90,32 @@ void timer_interruption(){
 #else
 				cambiarEstado8led(count & 0x000f);
 #endif
+				retardo_trd = 4;
 				estado = leer_boton;
 			}
 			else{ // Se ha pulsado el boton derecho
+				if (!eligiendo && !elige_fila && !elige_columna){
+					elige_columna=true;
+					D8Led_symbol(12 & 0x000f);
+					eligiendo = 1;
+					fila = (char) count;
 
-					if (!eligiendo && !elige_fila && !elige_columna){
-						elige_columna=true;
-						D8Led_symbol(12 & 0x000f);
-						eligiendo = 1;
-						fila = (char) count;
+				}
+				else{
+					elige_fila=true;
+					D8Led_symbol(15 & 0x000f);
+					eligiendo = 0;
+					columna = (char) count;
+					ready = (char) 1;
 
-					}
-					else{
-						elige_fila=true;
-						D8Led_symbol(15 & 0x000f);
-						eligiendo = 0;
-						columna = (char) count;
-						ready = (char) 1;
-
-					}
+				}
+				retardo_trd = 4;
 				estado = leer_boton;
 			}
 		}
 		else{
 			interrupciones_retardo--;
 		}
-		retardo_trd = 10;
 		break;
 	case leer_boton:
 		state = button_estado();
@@ -131,20 +131,10 @@ void timer_interruption(){
 				retardo_trd--;
 			}
 			else{
-				retardo_trd = 10;
+				retardo_trd = 4;
 			}
 		}
 		break;
-
-	/*case boton_soltado:
-		if(interrupciones_rebotes == 0){
-			estado = inicio;
-			button_empezar(boton_callback);
-		}
-		else{
-			interrupciones_rebotes--;
-		}
-		break;*/
 	default:
 		while(1); // Aqui falla algo...
 	}
