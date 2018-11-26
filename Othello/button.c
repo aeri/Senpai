@@ -26,7 +26,8 @@ int state = 0x0;
 #endif
 
 #include "botones_antirrebotes.h"
-
+int diferencia;
+int inicial;
 /*--- variables globales del módulo ---*/
 /* int_count la utilizamos para sacar un número por el 8led.
   Cuando se pulsa un botón sumamos y con el otro restamos. ¡A veces hay rebotes! */
@@ -37,7 +38,11 @@ int state = 0x0;
 void Eint4567_ISR(void)
 {
 	rINTMSK |= BIT_EINT4567; //Se desactivan las interrupciones del botón
+#ifndef TEST
 	button_callback(rPDATG & 0xc0);
+#else
+	botones_test();
+#endif
 	unsigned int button_time = timer2_leer();
 	push_debug(0x03, button_time);
 	/* Identificar la interrupcion (hay dos pulsadores)*/
@@ -47,6 +52,22 @@ void Eint4567_ISR(void)
 	/* Finalizar ISR */
 	rEXTINTPND = 0xf;				// borra los bits en EXTINTPND
 	rI_ISPC   |= BIT_EINT4567;		// borra el bit pendiente en INTPND
+#ifdef TEST
+	rINTMSK &= ~(BIT_EINT4567); // Se reactivan las interrupciones
+#endif
+}
+
+void botones_test(){
+	if(inicial == 0){
+		inicial = timer2_leer();
+	}
+	else{
+		diferencia = timer2_leer() - inicial;
+	}
+}
+
+int leer_tiempo(){
+	return diferencia;
 }
 
 void Eint4567_init(void)

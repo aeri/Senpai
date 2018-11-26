@@ -19,6 +19,7 @@ void Eint4567_ISR(void) __attribute__((interrupt("IRQ")));
 void Eint4567_init(void);
 
 
+int leer_tiempo();
 
 void button_empezar();
 

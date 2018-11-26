@@ -12,7 +12,7 @@
 #include "jugada_por_botones.h"
 //Selector de modo de prueba a modo de juego
 //#define PRUEBA
-
+//#define TEST
 // Tamaño del tablero
 enum { DIM=8 };
 
@@ -688,6 +688,21 @@ void reversi_main() {
 	timer2_inicializar();	    // Inicializacion del temporizador
 	timer2_empezar();
 	timer_init(); //Iniciar el timer0
+#ifdef TEST
+	int anterior = -1;
+	int actual = 0;
+	unsigned int tiempo = timer2_leer();
+	while(anterior != actual){
+		if(timer2_leer() - tiempo >= 100){
+			tiempo = timer2_leer();
+			if(leer_tiempo() != 0){
+				anterior = actual;
+				actual = leer_tiempo();
+			}
+		}
+	}
+	// Si se quiere probar el retardo poner un breakpoint en la siguiente orden. El retardo se encontrará en la variable "actual"
+#endif
 	char __attribute__ ((aligned (8))) candidatas[DIM][DIM] =
 	    {
 	        {NO,NO,NO,NO,NO,NO,NO,NO},
