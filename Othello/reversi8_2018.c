@@ -12,7 +12,6 @@
 #include "jugada_por_botones.h"
 //Selector de modo de prueba a modo de juego
 //#define PRUEBA
-//#define TEST
 // Tamaño del tablero
 enum { DIM=8 };
 
@@ -686,20 +685,27 @@ void reversi_main() {
 	Eint4567_init();	// inicializamos los pulsadores. Cada vez que se pulse se ver� reflejado en el 8led
 	D8Led_init();       // inicializamos el 8led
 	timer2_inicializar();	    // Inicializacion del temporizador
-	timer2_empezar();
 	timer_init(); //Iniciar el timer0
+	timer2_empezar();
 #ifdef TEST
-	int anterior = -1;
-	int actual = 0;
+	volatile int anterior = -2;
+	volatile int actual = -1;
+	volatile int interrupciones = 0;
 	unsigned int tiempo = timer2_leer();
-	while(anterior != actual){
-		if(timer2_leer() - tiempo >= 100){
-			tiempo = timer2_leer();
-			if(leer_tiempo() != 0){
-				anterior = actual;
-				actual = leer_tiempo();
+	while(1){
+		anterior = -2;
+		actual = -1;
+		while(anterior != actual){
+			if(timer2_leer() - tiempo >= 100000){
+				tiempo = timer2_leer();
+				if(leer_tiempo() != -1){
+					anterior = actual;
+					actual = leer_tiempo();
+					interrupciones = leer_interrupciones();
+				}
 			}
 		}
+		boton_reset_test();
 	}
 	// Si se quiere probar el retardo poner un breakpoint en la siguiente orden. El retardo se encontrará en la variable "actual"
 #endif

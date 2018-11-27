@@ -48,7 +48,7 @@ void jugada_botones(){
 			else{
 				contador++;
 			}
-			int abc = contador;
+
 			D8Led_symbol(contador & 0x000f);
 		}
 		else if(boton == 2){

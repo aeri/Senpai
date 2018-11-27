@@ -29,4 +29,8 @@ void cambiar_estado(int state);
 
 unsigned int button_estado();
 
+void boton_reset_test();
+
+int leer_interrupciones();
+
 #endif /* _BUTTON_H_ */

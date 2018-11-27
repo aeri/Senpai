@@ -18,7 +18,7 @@ void timer_init(void);
 void interrumpirTimer();
 #endif
 
-unsigned int interrucionesTimer();
+int interrupcionesTimer();
 
 void resetTimer();
 

@@ -5,6 +5,7 @@
 * Version:
 *********************************************************************************************/
 //#define SIM
+
 /*--- ficheros de cabecera ---*/
 #include "button.h"
 
@@ -26,18 +27,22 @@ int state = 0x0;
 #endif
 
 #include "botones_antirrebotes.h"
-int diferencia;
+int diferencia = -1;
 int inicial;
+int interrupciones = 0;
 /*--- variables globales del módulo ---*/
 /* int_count la utilizamos para sacar un número por el 8led.
   Cuando se pulsa un botón sumamos y con el otro restamos. ¡A veces hay rebotes! */
 //static volatile unsigned int int_count = 0;
 
 /*--- codigo de funciones ---*/
+void botones_test();
 #ifndef SIM
 void Eint4567_ISR(void)
 {
+#ifndef TEST
 	rINTMSK |= BIT_EINT4567; //Se desactivan las interrupciones del botón
+#endif
 #ifndef TEST
 	button_callback(rPDATG & 0xc0);
 #else
@@ -52,18 +57,27 @@ void Eint4567_ISR(void)
 	/* Finalizar ISR */
 	rEXTINTPND = 0xf;				// borra los bits en EXTINTPND
 	rI_ISPC   |= BIT_EINT4567;		// borra el bit pendiente en INTPND
-#ifdef TEST
-	rINTMSK &= ~(BIT_EINT4567); // Se reactivan las interrupciones
-#endif
 }
 
 void botones_test(){
 	if(inicial == 0){
 		inicial = timer2_leer();
+		diferencia = 0;
 	}
 	else{
 		diferencia = timer2_leer() - inicial;
 	}
+	interrupciones++;
+}
+
+int leer_interrupciones(){
+	return interrupciones;
+}
+
+void boton_reset_test(){
+	inicial = 0;
+	diferencia = -1;
+	interrupciones = 0;
 }
 
 int leer_tiempo(){

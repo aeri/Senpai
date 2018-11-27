@@ -49,7 +49,7 @@ void timer_ISR(void)
 	rI_ISPC |= BIT_TIMER0; // BIT_TIMER0 est� definido en 44b.h y pone un uno en el bit 13 que correponde al Timer0
 }
 
-unsigned int interrupcionesTimer(){
+int interrupcionesTimer(){
 	return count;
 }
 
