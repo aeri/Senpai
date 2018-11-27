@@ -105,13 +105,13 @@ void Eint4567_init(void)
 	rI_ISPC    |= (BIT_EINT4567);
 	rEXTINTPND = 0xf;
 }
-
+#endif
 void button_empezar(){
+#ifndef SIM
 	rINTMSK &= ~(BIT_EINT4567); // Se activan interrupciones
 	//pISR_EINT4567 = (int) callback; // Se vincula la función callback para que se salte a ella en una interrupción del botón
-}
-
 #endif
+}
 
 unsigned int button_estado(){
 #ifndef SIM
@@ -123,15 +123,6 @@ unsigned int button_estado(){
 
 #ifdef SIM
 void cambiar_estado(int estado) {
-	switch(estado){
-	case 1:
-		state = 0x80;
-		break;
-	case 2:
-		state = 0x40;
-		break;
-	default:
-		state = 0x00;
-	}
+	state = estado;
 }
 #endif

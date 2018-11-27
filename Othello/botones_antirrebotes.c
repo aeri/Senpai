@@ -1,6 +1,4 @@
 #include "botones_antirrebotes.h"
-
-//#define SIM
 #include "button.h"
 #include "stdbool.h"
 typedef enum { inicio, boton_pressed, leer_boton} maquina_estados;
@@ -30,7 +28,7 @@ int antirrebotes(){
 	switch(estado){
 	case inicio:
 		if(estado_boton != 0x0){
-			interrupciones_retardo = 4;
+			interrupciones_retardo = 1;
 			estado = boton_pressed;
 		}
 		break;
@@ -45,13 +43,13 @@ int antirrebotes(){
 
 			else if(state == 0x80) { // Se ha pulsado el boton izquierdo
 				boton = 1;
-				retardo_trd = 4;
+				retardo_trd = 1;
 				retardo2 = 20;
 				estado = leer_boton;
 			}
 			else{ // Se ha pulsado el boton derecho
 				boton = 2;
-				retardo_trd = 4;
+				retardo_trd = 1;
 				retardo2 = 20;
 				estado = leer_boton;
 			}
@@ -73,7 +71,7 @@ int antirrebotes(){
 				retardo_trd--;
 			}
 			else{
-				retardo_trd = 4;
+				retardo_trd = 1;
 				if(retardo2 == 0){
 					if(state == 0x80){
 						boton = 1;

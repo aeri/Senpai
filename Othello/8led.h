@@ -9,6 +9,8 @@
 #define _8LED_H_
 
 //#define SIM
+
+//#define SIM
 /*--- definicion de valores ---*/
 /* Mapa de bits de cada segmento
   (valor que se debe escribir en el display para que se ilumine el segmento) */

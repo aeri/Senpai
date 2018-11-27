@@ -7,6 +7,11 @@
 //#define SIM
 /*--- ficheros de cabecera ---*/
 #include "8led.h"
+
+#ifdef SIM
+int estado8led = 0;
+#endif
+
 #ifndef SIM
 #include "44b.h"
 #include "44blib.h"
@@ -23,21 +28,21 @@ void D8Led_init(void)
 	   (buscar en los ficheros de cabecera la direccion implicada) */
 	LED8ADDR = (unsigned char) cero;
 }
+#endif
 
 void D8Led_symbol(int value)
 {
+#ifndef SIM
 	/* muestra el Symbol[value] en el display (analogo al caso anterior) */
 	if ((value >= 0) && (value < size_8led)) {
 		LED8ADDR = (unsigned char) Symbol[value];
 	}
-}
 #else
-int estado8led = 0;
-
-void cambiarEstado8led(int state) {
-	estado8led = state;
+	estado8led = value;
+#endif
 }
 
+#ifdef SIM
 int getState8led() {
 	return estado8led;
 }

@@ -10,6 +10,9 @@
 #include "button.h"
 #include "timer0.h"
 #include "jugada_por_botones.h"
+#ifdef SIM
+#include "botones_antirrebotes.h"
+#endif
 //Selector de modo de prueba a modo de juego
 //#define PRUEBA
 // Tamaño del tablero
@@ -687,6 +690,7 @@ void reversi_main() {
 	timer2_inicializar();	    // Inicializacion del temporizador
 	timer_init(); //Iniciar el timer0
 	timer2_empezar();
+#endif
 #ifdef TEST
 	volatile int anterior = -2;
 	volatile int actual = -1;
@@ -705,9 +709,8 @@ void reversi_main() {
 				}
 			}
 		}
-		boton_reset_test();
+		boton_reset_test(); // Poner breakpoint aquí para mirar el retardo tras cada pulsación
 	}
-	// Si se quiere probar el retardo poner un breakpoint en la siguiente orden. El retardo se encontrará en la variable "actual"
 #endif
 	char __attribute__ ((aligned (8))) candidatas[DIM][DIM] =
 	    {
@@ -731,10 +734,11 @@ void reversi_main() {
 	unsigned char f, c;    // fila y columna elegidas por la máquina para su movimiento
 
 	init_table(tablero, candidatas);
-#else
+#ifdef SIM
 	unsigned volatile int timer_int, button_state;
 	volatile int led8_state;
-	button_state, timer_int = 0;
+	button_state = 0;
+	timer_int = 0;
 #endif
 #ifdef EXCEPT
 	excepciones_inicializar();
@@ -745,19 +749,17 @@ void reversi_main() {
 #ifdef SIM
 		if(timer_int == 1){
 			timer_int = 0;
-			timer_interruption();
-		}
-		if(button_estado() != button_state){
-			cambiar_estado(button_state);
-			if (button_state > 0){
-				boton_callback();
+			if (button_state != 0x0){
+				button_callback(button_state);
 			}
-		}
-		led8_state = getState8led();
+			cambiar_estado(button_state);
+			jugada_botones();
+			led8_state = getState8led();
 #else
 		if(interrupcionesTimer() == 1){
 			resetTimer();
 			jugada_botones();
+#endif
 			ready = getReady();
 			if(ready == 1){
 				resetReady();
@@ -789,6 +791,5 @@ void reversi_main() {
 				contar(tablero, &blancas, &negras);
 			}
 		}
-#endif
 	}
 }
