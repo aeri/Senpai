@@ -13,4 +13,8 @@ void jugada_botones();
 
 void jugada_init();
 
+void TS_callback(int x, int y);
+
+void avisarFin(int numNegras, int numBlancas);
+
 #endif

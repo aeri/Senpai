@@ -5,6 +5,7 @@
 * Version:
 *********************************************************************************************/
 //#define SIM
+//#define TEST
 
 /*--- ficheros de cabecera ---*/
 #include "button.h"
@@ -42,8 +43,6 @@ void Eint4567_ISR(void)
 {
 #ifndef TEST
 	rINTMSK |= BIT_EINT4567; //Se desactivan las interrupciones del botón
-#endif
-#ifndef TEST
 	button_callback(rPDATG & 0xc0);
 #else
 	botones_test();
@@ -108,6 +107,8 @@ void Eint4567_init(void)
 #endif
 void button_empezar(){
 #ifndef SIM
+	rEXTINTPND = 0xf;				// borra los bits en EXTINTPND
+	rI_ISPC   |= BIT_EINT4567;		// borra el bit pendiente en INTPND
 	rINTMSK &= ~(BIT_EINT4567); // Se activan interrupciones
 	//pISR_EINT4567 = (int) callback; // Se vincula la función callback para que se salte a ella en una interrupción del botón
 #endif

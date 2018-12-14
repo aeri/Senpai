@@ -28,8 +28,11 @@ int antirrebotes(){
 	switch(estado){
 	case inicio:
 		if(estado_boton != 0x0){
-			interrupciones_retardo = 1;
+			interrupciones_retardo = 2;
 			estado = boton_pressed;
+		}
+		else{
+			button_empezar();
 		}
 		break;
 	case boton_pressed:
@@ -43,13 +46,13 @@ int antirrebotes(){
 
 			else if(state == 0x80) { // Se ha pulsado el boton izquierdo
 				boton = 1;
-				retardo_trd = 1;
+				retardo_trd = 2;
 				retardo2 = 20;
 				estado = leer_boton;
 			}
 			else{ // Se ha pulsado el boton derecho
 				boton = 2;
-				retardo_trd = 1;
+				retardo_trd = 2;
 				retardo2 = 20;
 				estado = leer_boton;
 			}
@@ -71,15 +74,18 @@ int antirrebotes(){
 				retardo_trd--;
 			}
 			else{
-				retardo_trd = 1;
+				retardo_trd = 2;
 				if(retardo2 == 0){
 					if(state == 0x80){
 						boton = 1;
 					}
+					else if(state == 0x40){
+						boton = 2;
+					}
 					retardo2 = 20;
 				}
 				else {
-					if(state == 0x80){
+					if(state == 0x80 || state == 0x40){
 						retardo2--;
 					}
 				}

@@ -1,5 +1,6 @@
 //#define SIM
 //#define EXCEPT
+//#define TEST
 
 #include "led.h"
 #include "timer.h"
@@ -10,6 +11,10 @@
 #include "button.h"
 #include "timer0.h"
 #include "jugada_por_botones.h"
+
+#include "tp.h"
+#include "lcd.h"
+
 #ifdef SIM
 #include "botones_antirrebotes.h"
 #endif
@@ -417,7 +422,7 @@ int actualizar_tablero(char tablero[][DIM], char f, char c, char color)
 {
 	signed char SF, SC; // cantidades a sumar para movernos en la dirección que toque
     int i, flip, patron;
-
+    int haVolteado = 0;
     for (i = 0; i < DIM; i++) // 0 es Norte, 1 NE, 2 E ...
     {
         SF = vSF[i];
@@ -428,10 +433,11 @@ int actualizar_tablero(char tablero[][DIM], char f, char c, char color)
         //printf("Flip: %d \n", flip);
         if (patron == PATRON_ENCONTRADO )
         {
+        	haVolteado = 1;
             voltear(tablero, f, c, SF, SC, flip, color);
         }
     }
-    return 0;
+    return haVolteado;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -690,6 +696,13 @@ void reversi_main() {
 	timer2_inicializar();	    // Inicializacion del temporizador
 	timer_init(); //Iniciar el timer0
 	timer2_empezar();
+	Lcd_Init();
+	TS_init();
+	crearTablero();
+
+
+
+
 #endif
 #ifdef TEST
 	volatile int anterior = -2;
@@ -734,6 +747,7 @@ void reversi_main() {
 	unsigned char f, c;    // fila y columna elegidas por la máquina para su movimiento
 
 	init_table(tablero, candidatas);
+	mostrarTablero(tablero);
 #ifdef SIM
 	unsigned volatile int timer_int, button_state;
 	volatile int led8_state;
@@ -758,7 +772,7 @@ void reversi_main() {
 #else
 		if(interrupcionesTimer() == 1){
 			resetTimer();
-			jugada_botones();
+			jugada_botones(tablero);
 #endif
 			ready = getReady();
 			if(ready == 1){
@@ -770,9 +784,14 @@ void reversi_main() {
 				{
 
 					tablero[fila][columna] = FICHA_NEGRA;
-					actualizar_tablero(tablero, fila, columna, FICHA_NEGRA);
-					actualizar_candidatas(candidatas, fila, columna);
-					move = 1;
+
+					if(actualizar_tablero(tablero, fila, columna, FICHA_NEGRA) == 0){
+						tablero[fila][columna] = CASILLA_VACIA;
+					}
+					else{
+						actualizar_candidatas(candidatas, fila, columna);
+						move = 1;
+					}
 				}
 
 				// escribe el movimiento en las variables globales fila columna
@@ -789,6 +808,12 @@ void reversi_main() {
 					actualizar_candidatas(candidatas, f, c);
 				}
 				contar(tablero, &blancas, &negras);
+				if(fin == 1){
+					avisarFin(negras, blancas);
+				}
+				else{
+					mostrarTablero(tablero);
+				}
 			}
 		}
 	}
