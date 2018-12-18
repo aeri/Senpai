@@ -359,6 +359,7 @@ char ficha_valida(char tablero[][DIM], char f, char c, int *posicion_valida)
 // longitud es un parámetro por referencia. Sirve para saber la longitud del patrón que se está analizando. Se usa para saber cuantas fichas habría que voltear
 int patron_volteo(char tablero[][DIM], int *longitud, char FA, char CA, signed char SF, signed char SC, char color)
 {
+	suma_callback();
     int posicion_valida; // indica si la posición es valida y contiene una ficha de algún jugador
     int patron; //indica si se ha encontrado un patrón o no
     char casilla;   // casilla es la casilla que se lee del tablero
@@ -616,7 +617,6 @@ void reversi8()
     unsigned char f, c;    // fila y columna elegidas por la máquina para su movimiento
 
     init_table(tablero, candidatas);
-    int a, b, j, k;
     while (fin == 0)
     {
         move = 0;
@@ -698,10 +698,14 @@ void reversi_main() {
 	timer2_empezar();
 	Lcd_Init();
 	TS_init();
-	crearTablero();
+	__asm__(
+			"mrs r0,cpsr"
+			"bic r0,r0,#MODEMASK"
+			"orr r1,r0,#USERMODE"
+			"msr cpsr_cxsf,r1"
+			"ldr sp,=UserStack"
 
-
-
+	);
 
 #endif
 #ifdef TEST
@@ -741,13 +745,9 @@ void reversi_main() {
 	int done;     // la máquina ha conseguido mover o no
 	int move = 0; // el humano ha conseguido mover o no
 	int blancas, negras; // número de fichas de cada color
-	int fin = 0;  // fin vale 1 si el humano no ha podido mover
-				  // (ha introducido un valor de movimiento con algún 8)
-				  // y luego la máquina tampoco puede
+
 	unsigned char f, c;    // fila y columna elegidas por la máquina para su movimiento
 
-	init_table(tablero, candidatas);
-	mostrarTablero(tablero);
 #ifdef SIM
 	unsigned volatile int timer_int, button_state;
 	volatile int led8_state;
@@ -759,60 +759,78 @@ void reversi_main() {
 	Undef();
 #endif
 	jugada_init();
-	while(fin == 0){
+	while (1){
+		int fin = 0;  // fin vale 1 si el humano no ha podido mover
+						// (ha introducido un valor de movimiento con algún 8)
+						// y luego la máquina tampoco puede
+		init_table(tablero, candidatas);
+		while(fin == 0){
 #ifdef SIM
-		if(timer_int == 1){
-			timer_int = 0;
-			if (button_state != 0x0){
-				button_callback(button_state);
-			}
-			cambiar_estado(button_state);
-			jugada_botones();
-			led8_state = getState8led();
+			if(timer_int == 1){
+				timer_int = 0;
+				if (button_state != 0x0){
+					button_callback(button_state);
+				}
+				cambiar_estado(button_state);
+				jugada_botones();
+				led8_state = getState8led();
 #else
-		if(interrupcionesTimer() == 1){
-			resetTimer();
-			jugada_botones(tablero);
+			if(interrupcionesTimer() == 1){
+				resetTimer();
+				jugada_botones(tablero);
 #endif
-			ready = getReady();
-			if(ready == 1){
-				resetReady();
-				fila = getFila();
-				columna = getColumna();
-				// si la fila o columna son 8 asumimos que el jugador no puede mover
-				if (((fila) != DIM) && ((columna) != DIM))
-				{
+				ready = getReady();
+				if(ready == 1){
+					resetReady();
+					fila = getFila();
+					columna = getColumna();
+					long tiempoInicial = timer2_leer();
+					// si la fila o columna son 8 asumimos que el jugador no puede mover
+					reset_suma();
+					if (((fila) != DIM) && ((columna) != DIM))
+					{
 
-					tablero[fila][columna] = FICHA_NEGRA;
+						tablero[fila][columna] = FICHA_NEGRA;
 
-					if(actualizar_tablero(tablero, fila, columna, FICHA_NEGRA) == 0){
-						tablero[fila][columna] = CASILLA_VACIA;
+						if(actualizar_tablero(tablero, fila, columna, FICHA_NEGRA) == 0){
+							tablero[fila][columna] = CASILLA_VACIA;
+							setRendido();
+							fin = 1;
+						}
+						else{
+							actualizar_candidatas(candidatas, fila, columna);
+							move = 1;
+						}
+					}
+					else
+					{
+						setRendido();
+						fin = 1;
+					}
+					long tiempoFinal = timer2_leer();
+					mostrarTiempoJugada(tiempoFinal - tiempoInicial);
+					mostrar_veces();
+
+					// escribe el movimiento en las variables globales fila columna
+					done = elegir_mov(candidatas, tablero, &f, &c);
+					if (done == -1)
+					{
+						if (move == 0)
+							fin = 1;
+					}
+					else
+					{
+						tablero[f][c] = FICHA_BLANCA;
+						actualizar_tablero(tablero, f, c, FICHA_BLANCA);
+						actualizar_candidatas(candidatas, f, c);
+					}
+					contar(tablero, &blancas, &negras);
+					if(fin == 1){
+						avisarFin(negras, blancas);
 					}
 					else{
-						actualizar_candidatas(candidatas, fila, columna);
-						move = 1;
+						mostrarTablero(tablero);
 					}
-				}
-
-				// escribe el movimiento en las variables globales fila columna
-				done = elegir_mov(candidatas, tablero, &f, &c);
-				if (done == -1)
-				{
-					if (move == 0)
-						fin = 1;
-				}
-				else
-				{
-					tablero[f][c] = FICHA_BLANCA;
-					actualizar_tablero(tablero, f, c, FICHA_BLANCA);
-					actualizar_candidatas(candidatas, f, c);
-				}
-				contar(tablero, &blancas, &negras);
-				if(fin == 1){
-					avisarFin(negras, blancas);
-				}
-				else{
-					mostrarTablero(tablero);
 				}
 			}
 		}

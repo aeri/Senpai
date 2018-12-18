@@ -12,7 +12,7 @@
 #include "stdlib.h"
 
 /*--- variables globales ---*/
-static volatile int inter2 = 0;
+static volatile unsigned long long inter2 = 0;
 
 /* declaración de función que es rutina de servicio de interrupción
  * https://gcc.gnu.org/onlinedocs/gcc/ARM-Function-Attributes.html */
@@ -55,18 +55,18 @@ void timer2_empezar(void){
 	rTCON ^= 0x0003000;
 }
 
-inline static unsigned int ticks_to_ms(unsigned int ticks)
+inline static unsigned long long ticks_to_ms(unsigned long long ticks)
 {
 	return ticks >> 5; /* dividir por 32 */
 }
 
-unsigned int timer2_leer(){
+unsigned long long timer2_leer(){
 
-	unsigned int ints_antes, ints_despues;
+	unsigned long long ints_antes, ints_despues;
 	size_t i = 0;
 
 	ints_antes = inter2;
-	unsigned int ticks=rTCNTO2;
+	unsigned long long ticks=rTCNTO2;
 	ints_despues = inter2;
 
 	for(i=0; (i< 10) && (ints_antes != ints_despues); ++i ){
@@ -75,16 +75,16 @@ unsigned int timer2_leer(){
 		ints_despues = inter2;
 	}
 
-	unsigned int ticks_totales = ints_antes * rTCNTB2 + (rTCNTB2-ticks);
+	unsigned long long ticks_totales = ints_antes * rTCNTB2 + (rTCNTB2-ticks);
 
 	return ticks_to_ms(ticks_totales);
 }
 
-unsigned int timer2_parar(){
+unsigned long long timer2_parar(){
 	// Parar el timer y bajar auto-reload
 	rTCON &= 0xFFF6FFF;
 
-	unsigned int toma,tics;
+	unsigned long long toma,tics;
 	toma=inter2;
 	tics=rTCNTO2;
 	return ticks_to_ms(toma*rTCNTB2+(rTCNTB2-tics));

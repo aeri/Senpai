@@ -13,6 +13,7 @@ extern "C" {
 #endif
 
 #include "def.h"
+#include "stdbool.h"
 
 /*--- define macros---*/
 
@@ -67,7 +68,7 @@ extern "C" {
 #define XWIDTH 6
 #define BLACK 0xf
 #define WHITE 0x0
-#define LIGHTGRAY 0x5
+#define LIGHTGRAY 0x8
 #define DARKGRAY 0xa
 #define TRANSPARENCY 0xff
 
@@ -141,9 +142,13 @@ void Lcd_DspAscII6x8(INT16U usX0, INT16U usY0, INT8U ForeColor, INT8U *pucChar);
 void Lcd_DspAscII8x16(INT16U x0, INT16U y0, INT8U ForeColor, INT8U *s);
 void Lcd_DspHz16(INT16U x0, INT16U y0, INT8U ForeColor, INT8U *s);
 void ReverseLine(INT32U ulHeight, INT32U ulY);
+void mostrarResultado(int blancas, int negras);
+void mostrarLogo();
 void mostrarInstrucciones();
 void crearTablero();
 void mostrarTablero(char tablero[8][8]);
+void mostrarTiempoJugada(int tiempo);
+void mostrarTiempoTotal(int tiempo);
 INT8U LCD_GetPixel(INT16U usX, INT16U usY);
 
 

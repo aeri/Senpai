@@ -17,4 +17,12 @@ void TS_callback(int x, int y);
 
 void avisarFin(int numNegras, int numBlancas);
 
+void setRendido();
+
+void reset_suma();
+
+void suma_callback();
+
+void mostrar_veces();
+
 #endif

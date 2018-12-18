@@ -9,14 +9,14 @@
 #define _TIMER_H_
 
 /*--- variables visibles del módulo timer.c/timer.h ---*/
-static volatile int inter2;
+static volatile unsigned long long inter2;
 
 void timer2_inicializar(void);
 
 void timer2_empezar(void);
 
-unsigned int timer2_leer();
+unsigned long long timer2_leer();
 
-unsigned int timer2_parar();
+unsigned long long timer2_parar();
 
 #endif /* _TIMER_H_ */

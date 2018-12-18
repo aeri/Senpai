@@ -25,6 +25,70 @@ extern STRU_BITMAP Stru_Bitmap_gbMouse;
 extern STRU_BITMAP Stru_Bitmap_fNegra;
 extern STRU_BITMAP Stru_Bitmap_fBlanca;
 extern STRU_BITMAP Stru_Bitmap_fGris;
+extern STRU_BITMAP Stru_Bitmap_Senpai;
+extern STRU_BITMAP Stru_Bitmap_Unizar;
+
+
+/*
+int log10(int n)
+{
+	int log = 0;
+	// Assume n has initial value N
+	while ( n >= 10 ) {
+		// Invariant: N = n * 10^log
+		n /= 10;
+		log += 1;
+	}
+	return log;
+}
+
+char * toArray(int number)
+    {
+        int n = log10(number) + 1;
+        int i;
+        for ( i = n - 1; i >= 0; --i, number /= 10)
+        {
+            numberArray[i] = (number % 10) + '0';
+        }
+        numberArray[n] = '\0';
+        return numberArray;
+    }
+*/
+void toArray(int n, char numberArray[]){
+
+/* count number of digits */
+
+int c = 0; /* digit position */
+int number = n;
+if(n == 0)
+{
+	numberArray[0] = '0';
+	numberArray[1] = '\0';
+}
+else
+{
+
+while (n != 0)
+{
+    n /= 10;
+    c++;
+}
+
+
+numberArray[c] = '\0';
+
+n = number;
+
+/* extract each digit */
+while (n != 0)
+{
+    numberArray[c-1] = n % 10 +'0';
+    n /= 10;
+    c--;
+}
+}
+}
+
 
 /*--- codigo de la funcion ---*/
 void Lcd_Init(void)
@@ -547,9 +611,76 @@ void crearTablero()
 	    Lcd_Draw_VLine(20, 220, 20 + (i * 25), 15, 1);
 	}
     Lcd_DspAscII8x16(230, 45, BLACK, "Tiempo:");
+    Lcd_DspAscII8x16(230, 87, BLACK, "Total:");
+    Lcd_DspAscII8x16(230, 129, BLACK, "Veces:");
     Lcd_Dma_Trans();
 }
+/*********************************************************************************************
+ * name:		mostrarResultado()
+ * func:		Muestra el resultado de la partida
+ * para:		none
+ * ret:		none
+ * modify:
+ * comment:
+ *********************************************************************************************/
+void mostrarResultado(int blancas, int negras)
+{
+    Lcd_Clr();
+    Lcd_Active_Clr();
+    char numNegras[100];
+    toArray(negras, &numNegras);
 
+    char numBlancas[100];
+    toArray(blancas, &numBlancas);
+    if (blancas > negras){
+    	Lcd_DspAscII8x16(104, 30, BLACK, "HAS PERDIDO :(");
+    }
+    else if (blancas < negras){
+    	Lcd_DspAscII8x16(108, 30, BLACK, "HAS GANADO :)");
+    }
+    else{
+    	Lcd_DspAscII8x16(128, 30, BLACK, "EMPATE!!");
+    }
+    BitmapView(139, 76, Stru_Bitmap_fBlanca);
+    Lcd_DspAscII8x16(164, 78, BLACK, numBlancas);
+
+    BitmapView(139, 116, Stru_Bitmap_fNegra);
+    Lcd_DspAscII8x16(164, 118, BLACK, numNegras);
+    Lcd_DspAscII8x16(60, 204, BLACK, "PULSE PARA VOLVER A JUGAR");
+
+    Lcd_Dma_Trans();
+}
+/*********************************************************************************************
+ * name:		mostrarLogo()
+ * func:		Muestra los logos en el LCD
+ * para:		none
+ * ret:		none
+ * modify:
+ * comment:
+ *********************************************************************************************/
+void mostrarLogo(int logo)
+{
+    Lcd_Clr();
+    Lcd_Active_Clr();
+    switch(logo)
+    {
+    case 1:
+    	BitmapView(51, 20, Stru_Bitmap_Senpai);
+    	break;
+    case 2:
+    	BitmapView(34, 30, Stru_Bitmap_Unizar);
+    	break;
+    default:
+    	while(1); //Algo va mal...
+    }
+
+
+    Lcd_DspAscII8x16(84, 135, BLACK, "Daniel Naval Alcala");
+	Lcd_DspAscII8x16(100, 156, BLACK, "github.com/aeri");
+	Lcd_DspAscII8x16(80, 177, BLACK, "Pablo Orduna Lagarma");
+	Lcd_DspAscII8x16(92, 198, BLACK, "github.com/end222");
+    Lcd_Dma_Trans();
+}
 /*********************************************************************************************
  * name:		mostrarTablero()
  * func:		Muestra un tablero en el LCD pasado por parámetro
@@ -583,6 +714,56 @@ void mostrarTablero(char tablero[8][8])
     Lcd_Dma_Trans();
 }
 
+/*********************************************************************************************
+ * name:		mostrarTiempoJugada()
+ * func:		Muestra el tiempo de una jugada
+ * para:		none
+ * ret:		none
+ * modify:
+ * comment:
+ *********************************************************************************************/
+void mostrarTiempoJugada(int tiempo)
+{
+	LcdClrRect(230, 66, 320, 82, 0);
+	char prueba[100];
+	toArray(tiempo, prueba);
+	Lcd_DspAscII8x16(230, 66, BLACK,prueba );
+    Lcd_Dma_Trans();
+}
+
+/*********************************************************************************************
+ * name:		mostrarTiempoTotal()
+ * func:		Muestra el tiempo total de la partida
+ * para:		none
+ * ret:		none
+ * modify:
+ * comment:
+ *********************************************************************************************/
+void mostrarTiempoTotal(int tiempo)
+{
+	LcdClrRect(230, 108, 320, 124, 0);
+	char prueba[100];
+	toArray(tiempo, prueba);
+	Lcd_DspAscII8x16(230, 108, BLACK,prueba );
+	Lcd_Dma_Trans();
+}
+
+/*********************************************************************************************
+ * name:		mostrarVeces()
+ * func:		Muestra las veces que ha entrado a patron volteo
+ * para:		none
+ * ret:		none
+ * modify:
+ * comment:
+ *********************************************************************************************/
+void mostrarVeces(int veces)
+{
+	LcdClrRect(230, 150, 320, 166, 0);
+	char vecesArr[100];
+	toArray(veces, vecesArr);
+	Lcd_DspAscII8x16(230, 150, BLACK, vecesArr);
+	Lcd_Dma_Trans();
+}
 /*********************************************************************************************
  * name:		Lcd_Test()
  * func:		LCD test function
