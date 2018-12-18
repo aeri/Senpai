@@ -27,6 +27,7 @@ extern STRU_BITMAP Stru_Bitmap_fBlanca;
 extern STRU_BITMAP Stru_Bitmap_fGris;
 extern STRU_BITMAP Stru_Bitmap_Senpai;
 extern STRU_BITMAP Stru_Bitmap_Unizar;
+extern STRU_BITMAP Stru_Bitmap_Calibrado;
 
 
 /*
