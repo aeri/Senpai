@@ -35,8 +35,8 @@ void TSInt(void)
 {
     int   i;
     char fail = 0;
-    ULONG tmp;
-    ULONG Pt[6];
+    volatile ULONG tmp;
+    volatile ULONG Pt[6];
 
 	// <X-Position Read>
 	// TSPX(GPE4_Q4(+)) TSPY(GPE5_Q3(-)) TSMY(GPE6_Q2(+)) TSMX(GPE7_Q1(-))

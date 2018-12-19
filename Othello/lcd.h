@@ -143,12 +143,14 @@ void Lcd_DspAscII8x16(INT16U x0, INT16U y0, INT8U ForeColor, INT8U *s);
 void Lcd_DspHz16(INT16U x0, INT16U y0, INT8U ForeColor, INT8U *s);
 void ReverseLine(INT32U ulHeight, INT32U ulY);
 void mostrarResultado(int blancas, int negras);
+void mostrarCalibrar(int punto);
 void mostrarLogo();
 void mostrarInstrucciones();
 void crearTablero();
 void mostrarTablero(char tablero[8][8]);
 void mostrarTiempoJugada(int tiempo);
 void mostrarTiempoTotal(int tiempo);
+void mostrarVeces(int veces);
 INT8U LCD_GetPixel(INT16U usX, INT16U usY);
 
 

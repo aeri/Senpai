@@ -5,53 +5,15 @@ typedef enum
     instrucciones,
     inicial,
     elegir,
-    gameover
+    gameover,
+	confirmar
 } maquina;
 
 #include "8led.h"
 #include "Bmp.h"
 #include "botones_antirrebotes.h"
 #include "lcd.h"
-
-char __attribute__ ((aligned (8))) tablero_calibrar1[8][8] = {
-	        {1,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0}};
-
-char __attribute__ ((aligned (8))) tablero_calibrar2[8][8] = {
-	        {0,0,0,0,0,0,0,1},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0}};
-
-char __attribute__ ((aligned (8))) tablero_calibrar3[8][8] = {
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,1}};
-
-char __attribute__ ((aligned (8))) tablero_calibrar4[8][8] = {
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {0,0,0,0,0,0,0,0},
-	        {1,0,0,0,0,0,0,0}};
+#include "timer.h"
 
 extern STRU_BITMAP Stru_Bitmap_fGris;
 
@@ -61,18 +23,17 @@ maquina estado_jugada;
 int retardo_parpadeo;
 bool mostrando_ficha;
 bool finDeLaPartida;
-int TS_x;          // Eje de las x de la pantalla
-int TS_y;          // Eje de las y de la pantalla
+volatile int TS_x;          // Eje de las x de la pantalla
+volatile int TS_y;          // Eje de las y de la pantalla
 int retardo_boot;  // Tiempo que se muestra el logo del proyecto
 int negras;
 int blancas;
-int frontera;
 int retardo_TS;
-bool rendido;
 int veces;
 long tiempoInicialTotal;
 int retardo_tiempoTotal;
 int puntos_calibrar;
+int retardo_confirmar;
 
 int tope_arriba1, tope_arriba2, tope_abajo1, tope_abajo2, tope_derecha1, tope_derecha2, tope_izquierda1, tope_izquierda2;
 int media_arriba, media_abajo, media_izquierda, media_derecha;
@@ -105,26 +66,31 @@ void avisarFin(int numNegras, int numBlancas)
     finDeLaPartida = true;
 }
 
+void touchToPixel(int x, int y, int *pixelX, int *pixelY)
+{
+	*pixelY = (y - media_abajo) / ((media_arriba - media_abajo) / 240);
+	*pixelX = (x - media_izquierda) / ((media_derecha - media_izquierda) / 320);
+}
+
 void jugada_init()
 {
-	crearTablero();
-	mostrarTablero(tablero_calibrar1);
+	mostrarCalibrar(1);
     estado_jugada = calibrar;
     botones_antirrebotes_init();
-    D8Led_symbol(15 & 0x000f);
+    D8Led_symbol(12 & 0x000f);
+
     mostrando_ficha = true;
     fila = (char)0;
     columna = (char)0;
     ready = (char)0;
-    retardo_boot = 300;  // 2 segundos mostrando el logo del proyecto
+    retardo_boot = 300;  // Para mostrar el logo del proyecto
     finDeLaPartida = false;
-    rendido = false;
-    frontera = 400;  // Línea en el eje de las x que separa el tablero de la parte derecha
     TS_x = -1;
     TS_y = -1;
-    retardo_TS = 2;
+    retardo_TS = 10;
     retardo_tiempoTotal = 25;
     puntos_calibrar = 4;
+    retardo_confirmar = 100; // 2 segundos para confirmar
 }
 
 char getFila()
@@ -144,11 +110,6 @@ void resetReady()
 char getReady()
 {
     return ready;
-}
-
-void setRendido()
-{
-	rendido = true;
 }
 
 void jugada_botones(char tablero[8][8])
@@ -174,24 +135,24 @@ void jugada_botones(char tablero[8][8])
     	if(retardo_TS == 0){
 			if(TS_x != -1)
 			{
-				retardo_TS = 2;
+				retardo_TS = 10;
 				if(puntos_calibrar > 1)
 				{
 					switch(puntos_calibrar){
 					case 4:
 						tope_arriba1 = TS_y;
 						tope_izquierda1 = TS_x;
-						mostrarTablero(tablero_calibrar2);
+						mostrarCalibrar(2);
 						break;
 					case 3:
 						tope_arriba2 = TS_y;
 						tope_derecha1 = TS_x;
-						mostrarTablero(tablero_calibrar3);
+						mostrarCalibrar(3);
 						break;
 					case 2:
 						tope_abajo1 = TS_y;
 						tope_derecha2 = TS_x;
-						mostrarTablero(tablero_calibrar4);
+						mostrarCalibrar(4);
 						break;
 					}
 					puntos_calibrar--;
@@ -200,13 +161,15 @@ void jugada_botones(char tablero[8][8])
 				{
 					tope_abajo2 = TS_y;
 					tope_izquierda2 = TS_x;
-					estado_jugada = boot;
 					TS_x = -1;
 					TS_y = -1;
 					media_arriba = (tope_arriba1 + tope_arriba2)/2;
 					media_abajo = (tope_abajo1 + tope_abajo2)/2;
 					media_izquierda = (tope_izquierda1 + tope_izquierda2)/2;
 					media_derecha = (tope_derecha1 + tope_derecha2)/2;
+
+					D8Led_symbol(19 & 0x001f);
+					estado_jugada = boot;
 				}
 			}
     	}
@@ -245,9 +208,9 @@ void jugada_botones(char tablero[8][8])
 		{
 	    	crearTablero();
 	    	mostrarTablero(tablero);
-		    estado_jugada = inicial;
 		    tiempoInicialTotal = timer2_leer();
-		    rendido = false;
+
+		    estado_jugada = inicial;
 		}
 	    break;
 	case inicial:
@@ -255,6 +218,7 @@ void jugada_botones(char tablero[8][8])
 		{
 		    finDeLaPartida = false;
 		    mostrarResultado(blancas, negras);
+		    D8Led_symbol(0 & 0x000f);
 		    estado_jugada = gameover;
 		}
 	    else
@@ -278,15 +242,21 @@ void jugada_botones(char tablero[8][8])
 
 		    TS_x = -1;
 		    TS_y = -1;
-		    D8Led_symbol(6 & 0x000f);
-		    BitmapView(22 + (25 * columna), 22 + (25 * fila), Stru_Bitmap_fGris);
+		    D8Led_symbol(18 & 0x001f);
 		    Lcd_Dma_Trans();
 		    retardo_parpadeo = 10;
-		    mostrando_ficha = true;
+		    mostrando_ficha = false;
+		    retardo_TS = 10;
 		    estado_jugada = elegir;
 		}
 	    break;
 	case elegir:
+		if(retardo_TS > 0)
+		{
+			retardo_TS--;
+			TS_x = -1;
+			TS_y = -1;
+		}
 	    if(retardo_parpadeo == 0)
 		{
 		    if(mostrando_ficha)
@@ -353,22 +323,31 @@ void jugada_botones(char tablero[8][8])
 		    BitmapView(22 + (25 * columna), 22 + (25 * fila), Stru_Bitmap_fGris);
 		    Lcd_Dma_Trans();
 		}
-	    if(TS_x != -1)
+	    if(TS_x != -1 && retardo_TS == 0)
 		{
-		    ready = 1;
-		    int mediaarriba = media_arriba;
-		    int mediaabajo = media_abajo;
-		    int mediaizquierda = media_izquierda;
-		    int mediaderecha = media_derecha;
-		    int valorx = TS_x;
-		    int valory = TS_y;
-		    estado_jugada = inicial;
-		    retardo_TS = 2;
-		    //if(!(TS_x < media_arriba && TS_x > media_abajo && TS_y < media_derecha && TS_y > media_izquierda))
-			if(TS_x > media_derecha)
-		    {
-			    columna = 8;
-			    fila = 8;
+		    int x, y;
+		    touchToPixel(TS_x, TS_y, &x, &y);
+		    retardo_TS = 10;
+			if(x > 220) // 220 en el eje de las x es el final del tablero
+			{
+				if(y > 120) // 120 es el punto medio de la pantalla en vertical
+				{
+					columna = 8; // El 8 se utiliza para cuando el usuario se quiere rendir
+					fila = 8;
+				}
+				else
+				{
+					columna = 9; // Se pone 9 para indicar que se pasa
+					fila = 9;
+				}
+				ready = 1;
+				estado_jugada = inicial;
+			}
+			else
+			{
+				LcdClrRect(40, 222, 220, 240, 0);
+				Lcd_DspAscII8x16(44, 222, BLACK, "PULSA PARA CANCELAR");
+				estado_jugada = confirmar;
 			}
 		}
 	    break;
@@ -388,10 +367,64 @@ void jugada_botones(char tablero[8][8])
 			{
 				crearTablero();
 				mostrarTablero(tablero);
-				rendido = false;
 				estado_jugada = inicial;
 				tiempoInicialTotal = timer2_leer();
 			}
+		}
+		break;
+	case confirmar:
+		if(retardo_parpadeo == 0) // Se queda la ficha parpadeando en la posición seleccionada
+		{
+			if(mostrando_ficha)
+			{
+				LcdClrRect(22 + (25 * columna), 22 + (25 * fila), 42 + (25 * columna), 42 + (25 * fila), 0);
+			}
+			else
+			{
+				BitmapView(22 + (25 * columna), 22 + (25 * fila), Stru_Bitmap_fGris);
+			}
+			retardo_parpadeo = 10;
+			mostrando_ficha = !mostrando_ficha;
+			Lcd_Dma_Trans();
+		}
+		else
+		{
+			retardo_parpadeo--;
+		}
+		if(retardo_TS == 0)
+		{
+			if(boton != 0 || TS_x != -1)
+			{
+				retardo_TS = 10;
+				retardo_confirmar = 100;
+				LcdClrRect(40, 222, 220, 240, 0); // Se elimina el mensaje de cancelar
+				Lcd_DspAscII8x16(40, 222, BLACK, "PULSA PARA CONFIRMAR");
+				TS_x = -1;
+				TS_y = -1;
+				estado_jugada = elegir; // Se cancela la operación y se vuelve a elegir
+			}
+			else
+			{
+				if(retardo_confirmar == 0)
+				{
+					retardo_TS = 10;
+					ready = 1;
+					estado_jugada = inicial;
+					LcdClrRect(40, 222, 220, 240, 0); // Se elimina el mensaje de cancelar
+					Lcd_DspAscII8x16(40, 222, BLACK, "PULSA PARA CONFIRMAR");
+					retardo_confirmar = 100;
+				}
+				else
+				{
+					retardo_confirmar--;
+				}
+			}
+		}
+		else
+		{
+			TS_x = -1;
+			TS_y = -1;
+			retardo_TS--;
 		}
 		break;
 	default:

@@ -61,9 +61,11 @@ void DelayMs(int ms_time)
 void DelayTime(int num)
 {
 	int i;
-	
+	volatile int abcd;
 	for( i = 0 ; i < num ; i++ )
-		;
+	{
+		abcd = (0x3ff&rADCDAT);
+	}
 }
 
 //------------------------PORTS------------------------------//

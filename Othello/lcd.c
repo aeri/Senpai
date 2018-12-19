@@ -29,32 +29,6 @@ extern STRU_BITMAP Stru_Bitmap_Senpai;
 extern STRU_BITMAP Stru_Bitmap_Unizar;
 extern STRU_BITMAP Stru_Bitmap_Calibrado;
 
-
-/*
-int log10(int n)
-{
-	int log = 0;
-	// Assume n has initial value N
-	while ( n >= 10 ) {
-		// Invariant: N = n * 10^log
-		n /= 10;
-		log += 1;
-	}
-	return log;
-}
-
-char * toArray(int number)
-    {
-        int n = log10(number) + 1;
-        int i;
-        for ( i = n - 1; i >= 0; --i, number /= 10)
-        {
-            numberArray[i] = (number % 10) + '0';
-        }
-        numberArray[n] = '\0';
-        return numberArray;
-    }
-*/
 void toArray(int n, char numberArray[]){
 
 /* count number of digits */
@@ -611,9 +585,33 @@ void crearTablero()
 	    Lcd_Draw_HLine(20, 220, 20 + (i * 25), 15, 1);
 	    Lcd_Draw_VLine(20, 220, 20 + (i * 25), 15, 1);
 	}
+    Lcd_Draw_Box(230, 0, 319, 30, 15);
+    Lcd_DspAscII8x16(240, 7, BLACK, "RENDIRSE");
+    Lcd_Draw_Box(230, 210, 319, 239, 15);
+    Lcd_DspAscII8x16(240, 217, BLACK, "PASAR");
     Lcd_DspAscII8x16(230, 45, BLACK, "Tiempo:");
     Lcd_DspAscII8x16(230, 87, BLACK, "Total:");
     Lcd_DspAscII8x16(230, 129, BLACK, "Veces:");
+    Lcd_DspAscII8x16(40, 222, BLACK, "PULSA PARA CONFIRMAR");
+
+    Lcd_DspAscII8x16(6, 22, BLACK, "1");
+    Lcd_DspAscII8x16(6, 47, BLACK, "2");
+    Lcd_DspAscII8x16(6, 72, BLACK, "3");
+    Lcd_DspAscII8x16(6, 97, BLACK, "4");
+    Lcd_DspAscII8x16(6, 122, BLACK, "5");
+    Lcd_DspAscII8x16(6, 147, BLACK, "6");
+    Lcd_DspAscII8x16(6, 172, BLACK, "7");
+    Lcd_DspAscII8x16(6, 197, BLACK, "8");
+
+    Lcd_DspAscII8x16(26, 2, BLACK, "1");
+	Lcd_DspAscII8x16(51, 2, BLACK, "2");
+	Lcd_DspAscII8x16(76, 2, BLACK, "3");
+	Lcd_DspAscII8x16(101, 2, BLACK, "4");
+	Lcd_DspAscII8x16(126, 2, BLACK, "5");
+	Lcd_DspAscII8x16(151, 2, BLACK, "6");
+	Lcd_DspAscII8x16(176, 2, BLACK, "7");
+	Lcd_DspAscII8x16(201, 2, BLACK, "8");
+
     Lcd_Dma_Trans();
 }
 /*********************************************************************************************
@@ -651,6 +649,41 @@ void mostrarResultado(int blancas, int negras)
 
     Lcd_Dma_Trans();
 }
+
+/*********************************************************************************************
+ * name:		mostrarCalibrar()
+ * func:		Muestra los puntos para calibrar la pantalla
+ * para:		none
+ * ret:		none
+ * modify:
+ * comment:
+ *********************************************************************************************/
+void mostrarCalibrar(int punto)
+{
+    Lcd_Clr();
+    Lcd_Active_Clr();
+    switch(punto)
+    {
+    case 1:
+    	BitmapView(0, 0, Stru_Bitmap_Calibrado);
+    	break;
+    case 2:
+    	BitmapView(305, 0, Stru_Bitmap_Calibrado);
+    	break;
+    case 3:
+    	BitmapView(305, 225, Stru_Bitmap_Calibrado);
+    	break;
+    case 4:
+    	BitmapView(0, 225, Stru_Bitmap_Calibrado);
+    	break;
+    default:
+    	while(1); //Algo va mal...
+    }
+    Lcd_DspAscII8x16(84, 112, BLACK, "PULSE PARA CALIBRAR");
+
+    Lcd_Dma_Trans();
+}
+
 /*********************************************************************************************
  * name:		mostrarLogo()
  * func:		Muestra los logos en el LCD

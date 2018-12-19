@@ -214,6 +214,7 @@ extern void Abort();
 extern void Undef();
 extern void SWI();
 #endif
+extern void ModoUsuario();
 
 #ifndef SIM
 int patron_volteo_test(char tablero[][DIM], int *longitud, char FA, char CA, signed char SF, signed char SC, char color){
@@ -689,25 +690,9 @@ void reversi8()
 }
 
 void reversi_main() {
-#ifndef SIM
-	sys_init();         // Inicializacion de la placa, interrupciones y puertos
-	Eint4567_init();	// inicializamos los pulsadores. Cada vez que se pulse se ver� reflejado en el 8led
-	D8Led_init();       // inicializamos el 8led
-	timer2_inicializar();	    // Inicializacion del temporizador
-	timer_init(); //Iniciar el timer0
+
+
 	timer2_empezar();
-	Lcd_Init();
-	TS_init();
-	__asm__(
-			"mrs r0,cpsr"
-			"bic r0,r0,#MODEMASK"
-			"orr r1,r0,#USERMODE"
-			"msr cpsr_cxsf,r1"
-			"ldr sp,=UserStack"
-
-	);
-
-#endif
 #ifdef TEST
 	volatile int anterior = -2;
 	volatile int actual = -1;
@@ -789,22 +774,21 @@ void reversi_main() {
 					reset_suma();
 					if (((fila) != DIM) && ((columna) != DIM))
 					{
+						if(fila != 9 && columna != 9){
+							tablero[fila][columna] = FICHA_NEGRA;
 
-						tablero[fila][columna] = FICHA_NEGRA;
-
-						if(actualizar_tablero(tablero, fila, columna, FICHA_NEGRA) == 0){
-							tablero[fila][columna] = CASILLA_VACIA;
-							setRendido();
-							fin = 1;
-						}
-						else{
-							actualizar_candidatas(candidatas, fila, columna);
-							move = 1;
+							if(actualizar_tablero(tablero, fila, columna, FICHA_NEGRA) == 0){
+								tablero[fila][columna] = CASILLA_VACIA;
+								fin = 1;
+							}
+							else{
+								actualizar_candidatas(candidatas, fila, columna);
+								move = 1;
+							}
 						}
 					}
 					else
 					{
-						setRendido();
 						fin = 1;
 					}
 					long tiempoFinal = timer2_leer();
@@ -835,4 +819,16 @@ void reversi_main() {
 			}
 		}
 	}
+}
+
+void main(){
+	sys_init();         // Inicializacion de la placa, interrupciones y puertos
+	Eint4567_init();	// inicializamos los pulsadores. Cada vez que se pulse se ver� reflejado en el 8led
+	D8Led_init();       // inicializamos el 8led
+	timer2_inicializar();	    // Inicializacion del temporizador
+	timer_init(); //Iniciar el timer0
+
+	Lcd_Init();
+	TS_init();
+	ModoUsuario();
 }

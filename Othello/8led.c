@@ -19,7 +19,7 @@ int estado8led = 0;
 /*--- variables globales del m�dulo ---*/
 /* tabla de segmentos */
 static int
-Symbol[size_8led] = { cero, uno, dos, tres, cuatro, cinco, seis, siete, ocho, nueve, A, B, C, D, E, F, blank, U};
+Symbol[size_8led] = { cero, uno, dos, tres, cuatro, cinco, seis, siete, ocho, nueve, A, B, C, D, E, F, blank, U, P, L};
 
 /*--- c�digo de las funciones ---*/
 void D8Led_init(void)
